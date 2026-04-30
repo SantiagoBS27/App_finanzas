@@ -1,0 +1,33 @@
+.btn{
+    margin-top: 35px;
+    width: 100%;              
+    padding: 10px;            
+    font-size: 14px;
+
+    background-color: #40da80; 
+    color: white;
+
+    border: none;             
+    border-radius: 5px;       
+
+    cursor: pointer;          
+    transition: 0.3s; 
+}
+
+.btn:hover {
+    background-color: #2fbf6c;
+}
+
+@media (min-width: 769px) and (max-width: 1024px){
+    .btn{              
+    padding: 15px;            
+    font-size: 18px;
+    }
+}
+
+@media (min-width: 1025px) {
+    .btn{              
+    padding: 15px;            
+    font-size: 18px;
+    }
+}
