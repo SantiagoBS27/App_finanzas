@@ -1,6 +1,6 @@
 import Button from "../Components/Button"; 
 import Input from "../Components/Input"; 
-import "./Login.css"
+import "./Login.css"; 
 import { useState } from "react";
 
 function Login(){
@@ -24,7 +24,7 @@ function Login(){
 
             if (res.ok) {
                 alert("Login exitoso");
-                // luego aquí redirigimos al home
+                window.location.href = "/home"
             } else {
                 alert(result);
             }
@@ -36,38 +36,37 @@ function Login(){
     };
 
     return(
-        <div className="form-container">
-            <h1>Log in</h1>
+        <div className="page-body">
+            <div className="form-container">
+                <h1>Log in</h1>
 
-            <Input
-                label="Email"
-                type="email"
-                placeholder="example@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-            />
+                <Input
+                    label="Email"
+                    type="email"
+                    placeholder="example@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
 
-            <Input
-                label="Password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            />
-            <div class="forgot">
-                <a href="/forgot">Forgot password?</a>
-            </div>  
+                <Input
+                    label="Password"
+                    type="password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                />
+                
+                <Button 
+                    text="Log in" 
+                    onClick={handleLogin} 
+                />
 
-            <Button 
-            text="Log in" 
-            onClick={handleLogin} 
-            />
+                <div class="signup">
+                    Don't have an account?
+                    <a href="/Signup">Create one!</a>
+                </div>
 
-            <div class="signup">
-                Don't have an account?
-                <a href="/Signup">Create one!</a>
             </div>
-
         </div>
     );
 }

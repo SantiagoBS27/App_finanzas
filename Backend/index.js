@@ -128,3 +128,12 @@ app.post("/signup", (req, res) => {
         }); 
     }); 
 });
+
+app.get("/home", (req, res) => {
+    const sqlAcc = `
+        SELECT a.account_name, a.balance, a.id_account, c.iso
+        FROM ACCOUNT a
+        JOIN currencyType c ON c.id_currency = a.id_currency
+        WHERE a.id_user = ? 
+    `
+});

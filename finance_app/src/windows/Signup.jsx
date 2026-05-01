@@ -79,7 +79,6 @@ function Signup(){
 
             if (res.ok) {
                 setMostrarModal(true);
-            // luego redirigimos
             } else {
                 setMensaje(result);
             }
@@ -91,69 +90,71 @@ function Signup(){
     };
 
     return(
-        <div className="form-container">
-            <h1>Sign up</h1>
+        <div className="page-body">
+            <div className="form-container">
+                <h1>Sign up</h1>
 
-            {mostrarModal && (
-                <div className="modal">
-                    <div className="modal-box">
-                    <p>Usuario creado con éxito 🎉</p>
-                    <Button
-                    text="Continuar"
-                    onClick={() => window.location.href = "/"}
-                    />
+                {mostrarModal && (
+                    <div className="modal">
+                        <div className="modal-box">
+                        <p>Usuario creado con éxito 🎉</p>
+                        <Button
+                        text="Continuar"
+                        onClick={() => window.location.href = "/"}
+                        />
+                        </div>
                     </div>
-                </div>
-            )}
+                )}
 
-            {mensaje && <p className="mensaje">{mensaje}</p>}
+                {mensaje && <p className="mensaje">{mensaje}</p>}
 
-            <Input
-                label="Name"
-                type="text"
-                placeholder="Your name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-            />
+                <Input
+                    label="Name"
+                    type="text"
+                    placeholder="Your name"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                />
 
-            <Input
-                label="First name"
-                type="text"
-                placeholder="Your first name"
-                value={firstname}
-                onChange={(e) => setFirstName(e.target.value)}
-            />
+                <Input
+                    label="First name"
+                    type="text"
+                    placeholder="Your first name"
+                    value={firstname}
+                    onChange={(e) => setFirstName(e.target.value)}
+                />
 
-            <Input
-                label="Second name"
-                type="text"
-                placeholder="Your second name"
-                value={secondname}
-                onChange={(e) => setSecondName(e.target.value)}
-            />
+                <Input
+                    label="Second name"
+                    type="text"
+                    placeholder="Your second name"
+                    value={secondname}
+                    onChange={(e) => setSecondName(e.target.value)}
+                />
 
-            <Input
-                label="Email"
-                type="email"
-                placeholder="example@email.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-            />
+                <Input
+                    label="Email"
+                    type="email"
+                    placeholder="example@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                />
 
-            <Input
-                label="Password"
-                type="password"
-                placeholder="Enter your password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-            /> 
+                <Input
+                    label="Password"
+                    type="password"
+                    placeholder="Enter your password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                /> 
 
 
-            <Button 
-            text="Sign up" 
-            onClick={handleSignup} 
-            />
+                <Button 
+                    text="Sign up" 
+                    onClick={handleSignup} 
+                />
 
+            </div>
         </div>
     );
 }
