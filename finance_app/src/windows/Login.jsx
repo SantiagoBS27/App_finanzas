@@ -20,13 +20,16 @@ function Login(){
                 })
             });
 
-            const result = await res.text();
+            const data = await res.json();
 
             if (res.ok) {
+                localStorage.setItem("userId", data.userId);
+                localStorage.setItem("name", data.name); 
+
                 alert("Login exitoso");
                 window.location.href = "/home"
             } else {
-                alert(result);
+                alert(data.message);
             }
 
         } catch (error) {

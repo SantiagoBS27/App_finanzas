@@ -1,11 +1,11 @@
 .circular-btn {
-  width: 60px;
-  height: 60px;
+  width: 90px;
+  height: 90px;
 
   border-radius: 50%;       
   border: none;
 
-  background-color: #e4c439;
+  background-color:  #40da80;
   color: white;
 
   font-size: 14px;
@@ -21,5 +21,5 @@
 }
 
 .circular-btn:hover {
-    background-color: #b1982c;
+    background-color: #2fbf6c;
 }

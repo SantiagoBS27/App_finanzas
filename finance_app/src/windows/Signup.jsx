@@ -62,17 +62,17 @@ function Signup(){
 
         try {
             const res = await fetch("http://localhost:3227/signup", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                name,
-                last1: firstname,
-                last2: secondname,
-                email,
-                password
-            })
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    name,
+                    last1: firstname,
+                    last2: secondname,
+                    email,
+                    password
+                })
             });
 
             const result = await res.text();
@@ -97,11 +97,11 @@ function Signup(){
                 {mostrarModal && (
                     <div className="modal">
                         <div className="modal-box">
-                        <p>Usuario creado con éxito 🎉</p>
-                        <Button
-                        text="Continuar"
-                        onClick={() => window.location.href = "/"}
-                        />
+                            <p>Usuario creado con éxito</p>
+                            <Button
+                            text="Continuar"
+                            onClick={() => window.location.href = "/"}
+                            />
                         </div>
                     </div>
                 )}

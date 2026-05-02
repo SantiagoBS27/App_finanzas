@@ -1,7 +1,7 @@
 .home-container{
-    height: 100vh;      /* ocupa toda la pantalla */
+    height: 100vh;      
     width: 100vw;
-    background-color: rgb(245, 255, 203);
+    background: linear-gradient(150deg, #ffffff, #a7a7a7);
 
     display: flex;
     flex-direction: column;
@@ -34,6 +34,60 @@
 
     padding: 10px 10px;
     scroll-snap-type: x mandatory;
-    background-color: rgb(255, 252, 102);   
+    background-color: rgb(255, 255, 255);   
     border-radius: 10px;
 }
+
+.buttons-row{
+    display: flex;
+    justify-content: space-between; 
+    align-items: center;
+
+    margin-top: 50px;
+    padding: 0 20px;
+}
+
+.account{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+
+    background: rgba(0,0,0,0.5);
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.account-form{
+    margin: 0 auto; 
+    padding: 15px;
+    width: 90%;
+    max-width: 400px;
+
+    background-color: #fff;
+    border-radius: 10px;
+    animation: scaleIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+} 

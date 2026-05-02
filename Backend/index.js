@@ -40,7 +40,7 @@ app.post("/login", (req, res) => {
     const { email, password } = req.body;
 
     const sqlLOG = `
-        SELECT email, password_hash1, password_hash2
+        SELECT id_user, name, email, password_hash1, password_hash2
         FROM user 
         WHERE email = ? 
     `;
@@ -68,7 +68,11 @@ app.post("/login", (req, res) => {
 
             bcrypt.compare(hash1, hash2, (err, match2) => {
                 if(match2){
-                    return res.send("Login exitoso")
+                    return res.json({
+                        message: "Login exitoso",
+                        userId: result[0].id_user,
+                        name: result[0].name
+                    }); 
                 } else {
                     return res.status(401).send("Error en segundo hash");
                 }
@@ -130,10 +134,72 @@ app.post("/signup", (req, res) => {
 });
 
 app.get("/home", (req, res) => {
+
+    const userId = req.query.userId;
+
     const sqlAcc = `
         SELECT a.account_name, a.balance, a.id_account, c.iso
         FROM ACCOUNT a
         JOIN currencyType c ON c.id_currency = a.id_currency
         WHERE a.id_user = ? 
     `
+
+    db.query(sqlAcc, [userId], (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send("Error");
+        }
+
+        res.json(result);
+    }); 
+
 });
+
+app.get("/types", (req, res) => {
+    const sql = "SELECT id_type, name FROM accounttype";
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send("Error");
+        }
+
+        res.json(result);
+    });
+});
+
+app.get("/currencies", (req, res) => {
+    const sql = "SELECT id_currency, iso FROM currencyType";
+
+    db.query(sql, (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send("Error");
+        }
+
+        res.json(result);
+    });
+});
+
+app.post("/createAccount", (req, res) => {
+    const {userId, currencyId, typeId, accountName} = req.body; 
+        
+    if (!userId || !currencyId || !typeId || !accountName) {
+    return res.status(400).send("Faltan datos");
+    }
+
+    const sqlCre = `
+        INSERT INTO account
+        (id_user, id_currency, id_type, account_name, created_at)
+        VALUES(?, ?, ?, ?, NOW())
+    `;
+
+    db.query(sqlCre,[userId, currencyId, typeId, accountName], (err,result) =>{
+        if (err) {
+            console.log(err);
+            return res.status(500).send("Error");
+        }
+
+        res.send("Cuenta creada correctamente") 
+    });
+}); 

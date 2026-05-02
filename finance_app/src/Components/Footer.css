@@ -6,8 +6,8 @@
 
   height: 80px;
 
-  background-color: white;
-  border-top: 1px solid #ddd;
+  background-color: rgb(255, 255, 255);
+  border-top: 1px solid #000000;
 
   display: flex;
   justify-content: space-around;
@@ -17,5 +17,5 @@
 .footer a {
   text-decoration: none;
   color: #333;
-  font-size: 18px;
+  font-size: 16px;
 }
