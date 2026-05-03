@@ -1,0 +1,53 @@
+.accountinfo-container {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    box-shadow: 0px 4px 15px rgba(0, 0, 0, 0.15);
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.accountinfo-title {
+    text-align: center;
+    font-size: 32px;
+    margin-bottom: 20px;
+}
+
+.accountinfo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+.info-card {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0px 2px 8px rgba(0,0,0,0.1);
+}
+
+.info-card h3 {
+    margin: 0;
+    font-size: 16px;
+    color: gray;
+}
+
+.info-card p {
+    margin-top: 10px;
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+
+    padding: 10px 15px;
+    border: 5mm;
+    border-radius: 10px;
+    color: black;
+    cursor: pointer;
+}

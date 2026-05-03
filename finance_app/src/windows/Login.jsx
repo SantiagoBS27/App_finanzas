@@ -41,32 +41,32 @@ function Login(){
     return(
         <div className="page-body">
             <div className="form-container">
-                <h1>Log in</h1>
+                <h1> Iniciar sesion </h1>
 
                 <Input
-                    label="Email"
+                    label="Correo"
                     type="email"
-                    placeholder="example@email.com"
+                    placeholder="ejemplo@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />
 
                 <Input
-                    label="Password"
+                    label="Contraseña"
                     type="password"
-                    placeholder="Enter your password"
+                    placeholder="Ingrese su contraseña"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 />
                 
                 <Button 
-                    text="Log in" 
+                    text="Ingresar" 
                     onClick={handleLogin} 
                 />
 
                 <div class="signup">
-                    Don't have an account?
-                    <a href="/Signup">Create one!</a>
+                    ¿No tiene una cuenta?
+                    <a href="/Signup"> Crear una cuenta. </a>
                 </div>
 
             </div>

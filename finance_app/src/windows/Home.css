@@ -26,7 +26,7 @@
 
 .accounts-container {
     margin-top: 50px;
-    height: 30vh;
+    height: 40vh;
     align-items: center;
     display: flex;
     overflow-x: auto;     
@@ -48,10 +48,11 @@
 }
 
 .account{
+    text-align: center;
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;
+    width: 100%;  
     height: 100%;
 
     background: rgba(0,0,0,0.5);
@@ -62,6 +63,7 @@
 }
 
 .account-form{
+    text-align: center;
     margin: 0 auto; 
     padding: 15px;
     width: 90%;
@@ -91,3 +93,15 @@
     transform: scale(1);
   }
 } 
+
+.back-btn {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+
+    padding: 10px 15px;
+    border: 5mm;
+    border-radius: 10px;
+    color: black;
+    cursor: pointer;
+}

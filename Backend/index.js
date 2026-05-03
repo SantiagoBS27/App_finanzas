@@ -9,7 +9,7 @@ const port = 3227
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "22:SJ-KEE.15$",   
+    password: "2305",   
     database: "app_finanzas"
 });
 const corsOptions = {
@@ -178,6 +178,33 @@ app.get("/currencies", (req, res) => {
         }
 
         res.json(result);
+    });
+});
+
+app.get("/account/:id", (req, res) => {
+    const accountId = req.params.id;
+
+    const sql = `
+        SELECT a.id_account, a.id_type, a.account_name, a.balance, a.created_at,
+               c.iso,
+               t.name AS type_name
+        FROM account a
+        JOIN currencyType c ON c.id_currency = a.id_currency
+        JOIN accounttype t ON t.id_type = a.id_type
+        WHERE a.id_account = ?
+    `;
+
+    db.query(sql, [accountId], (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send("Error");
+        }
+
+        if (result.length === 0) {
+            return res.status(404).send("Cuenta no encontrada");
+        }
+
+        res.json(result[0]);
     });
 });
 
