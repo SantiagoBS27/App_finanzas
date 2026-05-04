@@ -38,13 +38,12 @@
     border-radius: 10px;
 }
 
-.buttons-row{
-    display: flex;
-    justify-content: space-between; 
-    align-items: center;
+.circular-btn{
+  position: fixed;   /* 🔥 clave */
+  bottom: 100px;      /* arriba del footer */
+  right: 20px;       /* lado derecho */
 
-    margin-top: 50px;
-    padding: 0 20px;
+  z-index: 1000;     /* por encima de todo */
 }
 
 .account{
@@ -91,3 +90,18 @@
     transform: scale(1);
   }
 } 
+
+@media (min-width: 769px) and (max-width: 1024px){
+    .btn{
+      width: 25%;
+      align-self: center;
+    }
+}
+
+@media (min-width: 1025px) {
+    .btn{
+      width: 25%;
+      align-self: center;
+    }
+}
+

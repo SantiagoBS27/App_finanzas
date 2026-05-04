@@ -16,24 +16,24 @@ function Signup(){
     const validarUsuario = () => {
 
         if (name.length < 3) {
-            setMensaje("Name must be at least 3 characters");
+            setMensaje("Nombre debe de tener por lo menos 3 caracteres");
             return false;
         }
 
         if (firstname.length < 3) {
-            setMensaje("First last name must be at least 3 characters");
+            setMensaje("Primer apellido debe de tener por lo menos 3 caracteres");
             return false;
         }
 
         if (secondname.length < 3) {
-            setMensaje("Second last name must be at least 3 characters");
+            setMensaje("Segundo apellido debe de tener por lo menos 3 caracteres");
             return false;
         }
 
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!emailRegex.test(email)) {
-            setMensaje("Invalid email format");
+            setMensaje("Formato de email inválido");
             return false;
         }
 
@@ -44,12 +44,12 @@ function Signup(){
             !email.endsWith("@itcr.ac.cr") &&
             !email.endsWith("@hotmail.com")
         ) {
-            setMensaje("Email must be gmail, yahoo, etc");
+            setMensaje("El correo debe ser gmail, yahoo, etc");
             return false;
         }
 
         if (password.length < 8) {
-            setMensaje("Password must be at least 8 characters");
+            setMensaje("La contraseña debe tener al menos 8 caracteres");
             return false;
         }
 

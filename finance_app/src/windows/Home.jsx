@@ -84,8 +84,8 @@ function Home(){
 
     return(
         <div className="home-container">
-            <h1>Welcome {name}!!</h1>
-            <h2>Your accounts</h2>
+            <h1>Bienvenido {name}!!</h1>
+            <h2>Tus cuentas</h2>
 
             {showForm && (
                 <div className="account" 
@@ -151,23 +151,10 @@ function Home(){
                 onClick={() => setShowForm(true)} 
             />
 
-            <div className="buttons-row">
-                <CircularButton
-                    text="Income" 
+            <CircularButton
+                text="Transacción" 
                     
-                />
-
-                <CircularButton
-                    text="Transaction" 
-                    
-                />
-
-                <CircularButton
-                    text="Expense" 
-                    
-                />
-            
-            </div>
+            />
 
             <Footer/>
             
