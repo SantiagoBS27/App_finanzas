@@ -4,7 +4,7 @@
     padding: 10px;            
     font-size: 14px;
 
-    background-color: #40da80; 
+    background-color: #35a3e3; 
     color: white;
 
     border: none;             
@@ -15,7 +15,7 @@
 }
 
 .btn:hover {
-    background-color: #2fbf6c;
+    background-color: #0f81c3;
 }
 
 @media (min-width: 769px) and (max-width: 1024px){

@@ -1,10 +1,10 @@
 import AccountCard from "../Components/AccountCard"; 
-import Footer from "../Components/Footer"; 
 import CircularButton from "../Components/CircularButton"; 
 import Button from "../Components/Button"; 
 import Input from "../Components/Input"; 
 import "./Home.css"; 
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 
@@ -18,6 +18,7 @@ function Home(){
     const [selectedCurrency, setSelectedCurrency] = useState("");
     const [types, setTypes] = useState([])
     const [selectedType, setSelectedType] = useState("")
+    const navigate = useNavigate();
 
     const createAccount = async () => {
         const userId = localStorage.getItem("userId");
@@ -83,9 +84,14 @@ function Home(){
     }, []);
 
     return(
+        <>
+        <button className="back-btn" onClick={() => navigate(-1)}>
+        Volver
+        </button>
+
         <div className="home-container">
-            <h1>Bienvenido {name}!!</h1>
-            <h2>Tus cuentas</h2>
+            <h1> Bienvenido, {name} </h1>
+            <h2> Cuentas </h2>
 
             {showForm && (
                 <div className="account" 
@@ -93,9 +99,9 @@ function Home(){
                     <div className="account-form"
                     onClick={(e) => e.stopPropagation()}>
                         <Input
-                            label = "Account name"
+                            label = "Nombre de la cuenta"
                             type = "text"
-                            placeholder= "Enter a name for your account"
+                            placeholder= "Ingrese un nombre"
                             value = {accountName}
                             onChange={(e) => setAccountName(e.target.value)}
                         />
@@ -104,7 +110,7 @@ function Home(){
                             value={selectedCurrency}
                             onChange={(e) => setSelectedCurrency(e.target.value)}
                             >
-                            <option value="">Select currency</option>
+                            <option value="">Tipo de moneda</option>
 
                             {currencies.map((cur) => (
                                 <option key={cur.id_currency} value={cur.id_currency}>
@@ -117,7 +123,7 @@ function Home(){
                             value={selectedType}
                             onChange={(e) => setSelectedType(e.target.value)}
                             >
-                            <option value="">Select account type</option>
+                            <option value="">Tipo de cuenta</option>
 
                             {types.map((typ) => (
                                 <option key={typ.id_type} value={typ.id_type}>
@@ -127,7 +133,7 @@ function Home(){
                         </select>
 
                         <Button
-                            text = "Create"
+                            text = "Crear"
                             onClick={createAccount} 
                         />
                     </div>
@@ -141,13 +147,13 @@ function Home(){
                         name = {acc.account_name}
                         balance = {acc.balance}
                         iso = {acc.iso}
-                        onClick = {() => console.log(acc.id_account)} //abrirCuenta(acc.id)}
+                        onClick={() => navigate(`/account/${acc.id_account}`)}
                     />
                 ))}
             </div >
 
             <Button
-                text = "+"
+                text = "Crear una cuenta nueva"
                 onClick={() => setShowForm(true)} 
             />
 
@@ -160,7 +166,9 @@ function Home(){
             
 
         </div>
+        </>
     );
+    
 }
 
 export default Home;

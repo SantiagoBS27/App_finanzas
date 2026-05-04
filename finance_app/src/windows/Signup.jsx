@@ -15,25 +15,10 @@ function Signup(){
 
     const validarUsuario = () => {
 
-        if (name.length < 3) {
-            setMensaje("Nombre debe de tener por lo menos 3 caracteres");
-            return false;
-        }
-
-        if (firstname.length < 3) {
-            setMensaje("Primer apellido debe de tener por lo menos 3 caracteres");
-            return false;
-        }
-
-        if (secondname.length < 3) {
-            setMensaje("Segundo apellido debe de tener por lo menos 3 caracteres");
-            return false;
-        }
-
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
         if (!emailRegex.test(email)) {
-            setMensaje("Formato de email inválido");
+            setMensaje("Formato de correo invalido");
             return false;
         }
 
@@ -92,7 +77,7 @@ function Signup(){
     return(
         <div className="page-body">
             <div className="form-container">
-                <h1>Sign up</h1>
+                <h1>Crear cuenta</h1>
 
                 {mostrarModal && (
                     <div className="modal">
@@ -109,48 +94,48 @@ function Signup(){
                 {mensaje && <p className="mensaje">{mensaje}</p>}
 
                 <Input
-                    label="Name"
+                    label="Nombre"
                     type="text"
-                    placeholder="Your name"
+                    placeholder="Nombre"
                     value={name}
                     onChange={(e) => setName(e.target.value)}
                 />
 
                 <Input
-                    label="First name"
+                    label="Primer apellido"
                     type="text"
-                    placeholder="Your first name"
+                    placeholder="Apellido"
                     value={firstname}
                     onChange={(e) => setFirstName(e.target.value)}
                 />
 
                 <Input
-                    label="Second name"
+                    label="Segundo apellido"
                     type="text"
-                    placeholder="Your second name"
+                    placeholder="Apellido"
                     value={secondname}
                     onChange={(e) => setSecondName(e.target.value)}
                 />
 
                 <Input
-                    label="Email"
+                    label="Correo"
                     type="email"
-                    placeholder="example@email.com"
+                    placeholder="ejemplo@email.com"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                 />
 
                 <Input
-                    label="Password"
+                    label="Contraseña"
                     type="password"
-                    placeholder="Enter your password"
+                    placeholder="Ingrese una contraseña"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                 /> 
 
 
                 <Button 
-                    text="Sign up" 
+                    text="Crear cuenta" 
                     onClick={handleSignup} 
                 />
 

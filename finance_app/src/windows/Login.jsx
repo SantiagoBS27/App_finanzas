@@ -41,10 +41,10 @@ function Login(){
     return(
         <div className="page-body">
             <div className="form-container">
-                <h1>Iniciar Sesión</h1>
+                <h1> Iniciar sesion </h1>
 
                 <Input
-                    label="Email"
+                    label="Correo"
                     type="email"
                     placeholder="ejemplo@email.com"
                     value={email}
@@ -52,7 +52,7 @@ function Login(){
                 />
 
                 <Input
-                    label="Password"
+                    label="Contraseña"
                     type="password"
                     placeholder="Ingrese su contraseña"
                     value={password}
@@ -60,13 +60,13 @@ function Login(){
                 />
                 
                 <Button 
-                    text="Iniciar Sesión" 
+                    text="Ingresar" 
                     onClick={handleLogin} 
                 />
 
                 <div class="signup">
-                    No tiene una cuenta?
-                    <a href="/Signup">Cree una!</a>
+                    ¿No tiene una cuenta?
+                    <a href="/Signup"> Crear una cuenta. </a>
                 </div>
 
             </div>
