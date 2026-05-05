@@ -11,16 +11,20 @@
     padding: 12px;
     border-radius: 12px;
 
-    background-color: rgb(210, 210, 210);
+    background-color: rgb(230, 230, 230);
 
     gap: 8px;
 
 }
 
+.AccCard:hover{
+    background-color: #444444;
+}
+
 .AccCard h3{
     text-align: center;
     font-size: 12px;
-    color: #9f9f9f;
+    color: #000000;
 }
 
 .AccCard p{
@@ -30,4 +34,24 @@
 
 .AccCard:active {
     transform: scale(0.97);
+}
+
+.Activo {
+  background-color: #62ad65; /* verde */
+}
+
+.Pasivo {
+  background-color: #ff685d; /* rojo */
+}
+
+.Gasto {
+  background-color: #ffbe5c; /* naranja */
+}
+
+.Ingreso {
+  background-color: #4ca9f5; /* azul */
+}
+
+.Capital {
+  background-color: #c450d8; /* morado */
 }

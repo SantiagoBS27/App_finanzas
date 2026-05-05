@@ -2,6 +2,7 @@ import AccountCard from "../Components/AccountCard";
 import CircularButton from "../Components/CircularButton"; 
 import Button from "../Components/Button"; 
 import Input from "../Components/Input"; 
+import Footer from "../Components/Footer"
 import "./Home.css"; 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -12,12 +13,26 @@ function Home(){
 
     const [accounts, setAccounts] = useState([]);
     const [name, setName] = useState(""); 
+
+    const [showTransaction, setShowTrans] = useState(false);
     const [showForm, setShowForm] = useState(false);
+    const [showBudgets, setShowBudgets] = useState(false);
+    const [showIncome, setShowIncome] = useState(false);
+
     const [accountName, setAccountName] = useState("");
+
+    const [budgets, setBudgets] = useState([]); 
+    const [transactions, setTransactions] = useState([]);
     const [currencies, setCurrencies] = useState([]);
     const [selectedCurrency, setSelectedCurrency] = useState("");
     const [types, setTypes] = useState([])
     const [selectedType, setSelectedType] = useState("")
+
+    const [fromAccount, setFromAccount] = useState("");
+    const [toAccount, setToAccount] = useState("");
+    const [amount, setAmount] = useState("");
+    const [date, setDate] = useState("");
+
     const navigate = useNavigate();
 
     const createAccount = async () => {
@@ -57,6 +72,84 @@ function Home(){
 
     };
 
+    const transaction = async () => {
+    try {
+        const res = await fetch("http://localhost:3227/transaction", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                fromAccount,
+                toAccount,
+                amount: Number(amount)
+            })
+        });
+
+        const result = await res.text();
+
+        if (res.ok) {
+            alert("Transacción realizada");
+            setShowTrans(false); 
+            fetchTransactions();
+
+        } else {
+            alert(result);
+        }
+    } catch (error) {
+        console.error(error);
+    }
+};
+
+const income = async () => {
+    try{
+        const res = await fetch("http://localhost:3227/income", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                toAccount,
+                amount: Number(amount)
+            })
+        });
+
+        const result = await res.text();
+
+        if (res.ok) {
+            alert("Ingreso registrado");
+        } else {
+            alert(result);
+        }
+
+    } catch (error) {
+        console.error(error);
+    }
+}; 
+
+    const fetchBudgets = async () => {
+        const userId = localStorage.getItem("userId");
+        try {
+            const res = await fetch(`http://localhost:3227/budgets/${userId}`);
+            const data = await res.json();
+            setBudgets(data);
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
+    const fetchTransactions = async () => {
+        const userId = localStorage.getItem("userId");
+
+        try {
+            const res = await fetch(`http://localhost:3227/transactions/${userId}`);
+            const data = await res.json();
+            setTransactions(data);
+        } catch (err) {
+            console.error(err);
+        }
+    };
+
     useEffect(() => {
         const userId = localStorage.getItem("userId");
         const savedName = localStorage.getItem("name"); 
@@ -83,14 +176,13 @@ function Home(){
             .catch(err => console.error(err));
     }, []);
 
-    return(
-        <>
-        <button className="back-btn" onClick={() => navigate(-1)}>
-        Volver
-        </button>
+    useEffect(() => {
+        fetchTransactions();
+    }, []);
 
+    return(
         <div className="home-container">
-            <h1> Bienvenido, {name} </h1>
+            <h1> Bienvenido, {name}!! </h1>
             <h2> Cuentas </h2>
 
             {showForm && (
@@ -138,7 +230,121 @@ function Home(){
                         />
                     </div>
                 </div>
-            )}; 
+            )} 
+
+            {showBudgets && (
+                <div className="account"
+                onClick={() => setShowBudgets(false)}>
+                    <div className="account-form"
+                    onClick={(e) => e.stopPropagation()}>
+                        <h1>Presupuestos</h1>
+                        <div className="table-container">
+                            <table className="table">
+                                <thead>
+                                    <tr>
+                                        <th>Cuenta</th>
+                                        <th>Monto</th>
+                                        <th>Inicio</th>
+                                        <th>Fin</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {budgets.map((b, index) => (
+                                    <tr key={index}>
+                                        <td>{b.account_name}</td>
+                                        <td>{Number(b.amount).toLocaleString()}</td>
+                                        <td>{new Date(b.start_date).toLocaleDateString()}</td>
+                                        <td>{new Date(b.end_date).toLocaleDateString()}</td>
+                                    </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showTransaction && (
+                <div className="account"
+                onClick={() => setShowTrans(false)}>
+                    <div className="account-form"
+                    onClick={(e) => e.stopPropagation()}>
+
+                        <select onChange={(e) => setFromAccount(Number(e.target.value))}>
+                            <option value="">Cuenta origen</option>
+                            
+                            {accounts
+                            .filter(acc => acc.type_name !== "Gasto" && acc.type_name !== "Pasivo")
+                            .map(acc => (
+                                <option key={acc.id_account} value={acc.id_account}>
+                                {acc.account_name}
+                                </option>
+                            ))}
+                            </select>
+
+                            <select onChange={(e) => setToAccount(Number(e.target.value))}>
+                            <option value="">Cuenta destino</option>
+                            {accounts
+                            .filter(acc => acc.id_account !== fromAccount)
+                            .map(acc => (
+                                <option key={acc.id_account} value={acc.id_account}>
+                                {acc.account_name}
+                                </option>
+                            ))}
+                        </select>
+
+                        <Input
+                            type="number"
+                            placeholder="Monto"
+                            value={amount}
+                            onChange={(e) => setAmount(e.target.value)}
+                        />
+
+                        <Button
+                            text = "Completar"
+                            onClick={transaction} 
+                        />
+                        
+                    </div>
+                </div>
+            )}
+
+
+            {showIncome && (
+                <div className="account"
+                onClick={() => setShowIncome(false)}>
+                    <div className="account-form"
+                    onClick={(e) => e.stopPropagation()}>
+
+                        <select onChange={(e) => setToAccount(Number(e.target.value))}>
+                            <option value="">Cuenta destino</option>
+                            {accounts
+                            .filter(acc => acc.type_name !== "Gasto" && acc.type_name !== "Pasivo")
+                            .map(acc => (
+                                <option key={acc.id_account} value={acc.id_account}>
+                                {acc.account_name}
+                                </option>
+                            ))}
+                        </select>
+
+                        <Input
+                            type="number"
+                            placeholder="Monto"
+                            value={amount}
+                            onChange={(e) => setAmount(e.target.value)}
+                        />
+
+                        <Button
+                            text = "Completar"
+                            onClick={income} 
+                        />
+                        
+                    </div>
+                </div>
+            )}
+
+
+
 
             <div className="accounts-container">
                 {accounts.map((acc) => (
@@ -147,6 +353,7 @@ function Home(){
                         name = {acc.account_name}
                         balance = {acc.balance}
                         iso = {acc.iso}
+                        type={acc.type_name}
                         onClick={() => navigate(`/account/${acc.id_account}`)}
                     />
                 ))}
@@ -154,19 +361,72 @@ function Home(){
 
             <Button
                 text = "Crear una cuenta nueva"
-                onClick={() => setShowForm(true)} 
+                onClick={() => {
+                    setShowForm(true);
+                    setSelectedCurrency(""); 
+                    setSelectedType(""); 
+                    setAccountName(""); 
+                }} 
             />
 
-            <CircularButton
-                text="Transacción" 
-                    
-            />
+            
+            <div className="transaction-history">
+                <h2>Historial de transacciones</h2>
+                <div className="table-history">
+                    <table className="tableT">
+                        <thead>
+                            <tr>
+                                <th>Cuenta origen</th>
+                                <th>Cuenta destino</th>
+                                <th>Monto</th>
+                                <th>Fecha</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {transactions.map((t, index) => (
+                                <tr key={index}>
+                                    <td>{t.from_account}</td>
+                                    <td>{t.to_account}</td>
+                                    <td>{Number(t.amount).toLocaleString()}</td>
+                                    <td>{new Date(t.created_at).toLocaleDateString()}</td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+                
+            
 
-            <Footer/>
+
+            <div className="fab-container">
+                <CircularButton
+                    text="Transacción"
+                    onClick={() => {
+                        setShowTrans(true);
+                        setFromAccount("");
+                        setToAccount("");
+                        setAmount("");
+                    }}
+                />
+
+                <CircularButton
+                    text="Registrar ingreso"
+                    onClick={() => {
+                        setShowIncome(true); 
+                        setToAccount("");
+                        setAmount("");
+                    }}
+                />
+            </div>
+
+            <Footer onOpenBudgets={() => {
+                setShowBudgets(true);
+                fetchBudgets();
+            }} />
             
 
         </div>
-        </>
     );
     
 }

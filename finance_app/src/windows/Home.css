@@ -1,7 +1,8 @@
-.home-container{
-    height: 100vh;      
+/* 🔹 CONTENEDOR PRINCIPAL */
+.home-container {
+    height: 100vh;
     width: 100vw;
-    background: linear-gradient(150deg, #ffffff, #a7a7a7);
+    background-color: #fff;
 
     display: flex;
     flex-direction: column;
@@ -10,97 +11,197 @@
     box-sizing: border-box;
 }
 
-.home-container h1{
-    margin-top: 0;        
-    margin-bottom: 10px;  
+/* 🔹 TÍTULOS */
+.home-container h1 {
+    margin-top: 0;
+    margin-bottom: 10px;
     text-align: center;
     font-size: 35px;
 }
 
-.home-container h2{
-    margin-top: 0;        
-    margin-bottom: 10px;  
+.home-container h2 {
+    margin-top: 0;
     text-align: center;
     font-size: 25px;
 }
 
+/* 🔹 CARDS DE CUENTAS */
 .accounts-container {
     margin-top: 50px;
-    height: 40vh;
-    align-items: center;
+    height: 30vh;
+
     display: flex;
-    overflow-x: auto;     
+    align-items: center;
     gap: 12px;
 
-    padding: 10px 10px;
+    overflow-x: auto;
+    padding: 10px;
+
     scroll-snap-type: x mandatory;
-    background-color: rgb(255, 255, 255);   
+
+    background-image: url("public/images/dinero.jpg");
+    background-size: cover;
+    background-position: center;
+
     border-radius: 10px;
 }
 
-.circular-btn{
-  position: fixed;   /* 🔥 clave */
-  bottom: 100px;      /* arriba del footer */
-  right: 20px;       /* lado derecho */
-
-  z-index: 1000;     /* por encima de todo */
+/* 🔹 BOTÓN FLOTANTE */
+.circular-btn {
+    position: relative;
+    bottom: 100px;
+    right: 20px;
+    z-index: 1000;
 }
 
-.account{
-    text-align: center;
+.fab-container {
+  position: fixed;
+
+  bottom: 30px; 
+  right: 20px;
+
+  display: flex;
+  flex-direction: column; 
+  gap: 40px;
+
+  z-index: 1500;
+}
+
+/* 🔹 MODAL (OVERLAY) */
+.account {
     position: fixed;
     top: 0;
     left: 0;
-    width: 100%;  
+    width: 100%;
     height: 100%;
 
-    background: rgba(0,0,0,0.5);
+    background: rgba(0,0,0,0.65);
 
     display: flex;
     justify-content: center;
     align-items: center;
+
+    z-index: 2000; /* 🔥 CLAVE */
 }
 
-.account-form{
-    text-align: center;
-    margin: 0 auto; 
-    padding: 15px;
+/* 🔹 CONTENIDO DEL MODAL */
+.account-form {
+    position: relative;
+    background: #fff;
+
+    padding: 20px;
     width: 90%;
     max-width: 400px;
 
-    background-color: #fff;
-    border-radius: 10px;
+    border-radius: 12px;
+
+    text-align: center;
+
     animation: scaleIn 0.3s ease;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes scaleIn {
-  from {
-    opacity: 0;
-    transform: scale(0.9);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-} 
-
+/* 🔹 BOTÓN BACK */
 .back-btn {
     position: absolute;
     top: 20px;
     left: 20px;
 
     padding: 10px 15px;
-    border: 5mm;
     border-radius: 10px;
-    color: black;
+
     cursor: pointer;
 }
+
+/* 🔹 HISTORIAL DE TRANSACCIONES */
+.transaction-history {
+    width: 88vw;
+    margin-top: 20px;
+    background: #ffffff;
+
+    border-radius: 12px;
+    padding: 15px;
+
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.transaction-history h2 {
+    text-align: left;
+    margin-bottom: 10px;
+}
+
+/* 🔹 CONTENEDOR SCROLL */
+.table-history {
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+/* 🔹 TABLA */
+.tableT {
+    width: 88vw;
+    border-collapse: collapse;
+}
+
+.tableT th, 
+.tableT td {
+    padding: 10px;
+    text-align: center;
+    border-bottom: 1px solid #ddd;
+}
+
+/* 🔹 HEADER FIJO */
+.tableT th {
+    position: sticky;
+    top: 0;
+    background: #fff;
+    font-weight: bold;
+    z-index: 1;
+}
+
+/* 🔹 HOVER */
+.tableT tr:hover {
+    background-color: #f5f5f5;
+}
+
+/* 🔹 TABLA DE PRESUPUESTOS */
+.table-container {
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.table th, 
+.table td {
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+    text-align: center;
+}
+
+.table th {
+    position: sticky;
+    top: 0;
+    background: #fff;
+    color: #555;
+}
+
+/* 🔹 BOTONES */
+.btn {
+    margin-top: 10px;
+}
+
+/* 🔹 ANIMACIONES */
+@keyframes scaleIn {
+    from {
+        opacity: 0;
+        transform: scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+

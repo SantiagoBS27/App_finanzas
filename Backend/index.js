@@ -9,7 +9,7 @@ const port = 3227
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "2305",   
+    password: "22:SJ-KEE.15$",   
     database: "app_finanzas"
 });
 const corsOptions = {
@@ -138,10 +138,16 @@ app.get("/home", (req, res) => {
     const userId = req.query.userId;
 
     const sqlAcc = `
-        SELECT a.account_name, a.balance, a.id_account, c.iso
-        FROM ACCOUNT a
+        SELECT 
+            a.account_name, 
+            a.balance, 
+            a.id_account, 
+            c.iso,
+            t.name AS type_name
+        FROM account a
         JOIN currencyType c ON c.id_currency = a.id_currency
-        WHERE a.id_user = ? 
+        JOIN accounttype t ON t.id_type = a.id_type
+        WHERE a.id_user = ?  
     `
 
     db.query(sqlAcc, [userId], (err, result) => {
@@ -186,11 +192,18 @@ app.get("/account/:id", (req, res) => {
 
     const sql = `
         SELECT a.id_account, a.id_type, a.account_name, a.balance, a.created_at,
-               c.iso,
+               c.iso, b.amount AS budget, b.start_date AS start, b.end_date AS end,  
                t.name AS type_name
         FROM account a
         JOIN currencyType c ON c.id_currency = a.id_currency
         JOIN accounttype t ON t.id_type = a.id_type
+        LEFT JOIN budget b 
+            ON b.id_account = a.id_account
+            AND b.end_date = (
+                SELECT MAX(end_date)
+                FROM budget
+                WHERE id_account = a.id_account
+            )
         WHERE a.id_account = ?
     `;
 
@@ -205,6 +218,24 @@ app.get("/account/:id", (req, res) => {
         }
 
         res.json(result[0]);
+    });
+});
+
+app.post("/createBudget", (req, res) => {
+    const { accountId, amount, days } = req.body;
+
+    const sql = `
+        INSERT INTO budget (id_account, amount, start_date, end_date)
+        VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL ? DAY))
+    `;
+
+    db.query(sql, [accountId, amount, days], (err, result) => {
+        if (err) {
+            console.log(err);
+            return res.status(500).send("Error al crear presupuesto");
+        }
+
+        res.json({ message: "Budget creado correctamente" });
     });
 });
 
@@ -230,3 +261,129 @@ app.post("/createAccount", (req, res) => {
         res.send("Cuenta creada correctamente") 
     });
 }); 
+
+app.get("/historyBudget/:id", (req, res) => {
+    const accountId = req.params.id;
+
+    const sqlBH = `
+        SELECT amount, start_date, end_date
+        FROM budget b
+        WHERE id_account = ?
+        ORDER BY start_date DESC
+    `; 
+
+    db.query(sqlBH, [accountId], (err, result) => {
+        if(err){
+            console.log(err); 
+            return res.status(500).send("Error"); 
+        }
+
+        res.json(result); 
+    }); 
+}); 
+
+app.get("/budgets/:userId", (req, res) => {
+    const userId = req.params.userId; 
+
+    const sqlALLB = `
+        SELECT amount, start_date, end_date,
+            a.account_name, a.id_account
+        FROM budget b 
+        JOIN account a ON a.id_account = b.id_account 
+        WHERE a.id_user = ?
+        ORDER BY b.start_date DESC
+    `;
+
+    db.query(sqlALLB, [userId], (err, result) => {
+        if (err){
+            console.log(err); 
+            return res.status(500).send("Error"); 
+        } 
+
+        res.json(result); 
+    });
+}); 
+
+app.get("/transactions/:userId", (req, res) => {
+    const userId = req.params.userId;
+
+    const sql = `
+        SELECT 
+            t.amount,
+            t.created_at,
+            a1.account_name AS from_account,
+            a2.account_name AS to_account
+        FROM transaction t
+        JOIN account a1 ON a1.id_account = t.id_orig_account
+        JOIN account a2 ON a2.id_account = t.id_dest_account
+        WHERE a1.id_user = ? OR a2.id_user = ?
+        ORDER BY t.created_at DESC
+    `;
+
+    db.query(sql, [userId, userId], (err, result) => {
+        if (err) return res.status(500).send("Error");
+        res.json(result);
+    });
+});
+
+app.post("/transaction", (req, res) => {
+    const { fromAccId, toAccId, amount } = req.body;
+
+    if (Number(fromAccId) === Number(toAccId)) {
+        return res.status(400).send("No puedes transferir a la misma cuenta");
+    }
+
+    db.beginTransaction((err) => {
+        if (err) return res.status(500).send("Error");
+
+        const updateFrom = `
+            UPDATE account
+            SET balance = balance - ?
+            WHERE id_account = ? AND balance >= ?
+        `;
+
+        db.query(updateFrom, [amount, fromAccId, amount], (err, result) => {
+            if (err) {
+                return db.rollback(() => res.status(500).send("Error origen"));
+            }
+
+            if (result.affectedRows === 0) {
+                return db.rollback(() => res.status(400).send("Fondos insuficientes"));
+            }
+
+            const updateTo = `
+                UPDATE account
+                SET balance = balance + ?
+                WHERE id_account = ?
+            `;
+
+            db.query(updateTo, [amount, toAccId], (err) => {
+                if (err) {
+                    return db.rollback(() => res.status(500).send("Error destino"));
+                }
+
+                const insertSql = `
+                    INSERT INTO transaction
+                    (id_orig_account, id_dest_account, amount, created_at)
+                    VALUES (?, ?, ?, NOW())
+                `;
+
+                db.query(insertSql, [fromAccId, toAccId, amount], (err) => {
+                    if (err) {
+                        return db.rollback(() => res.status(500).send("Error en transacción"));
+                    }
+
+                    db.commit((err) => {
+                        if (err) {
+                            return db.rollback(() => res.status(500).send("Error commit"));
+                        }
+
+                        res.send("Transacción exitosa");
+                    });
+                });
+            });
+        });
+    });
+});
+
+ 
