@@ -2,8 +2,6 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 
 import "./AccountInfo.css";
-import Footer from "../Components/Footer"
-import CircularButton from "../Components/CircularButton"; 
 import Button from "../Components/Button"; 
 import Input from "../Components/Input"; 
 
@@ -11,10 +9,18 @@ function AccountInfo() {
   const { id } = useParams();
   const [account, setAccount] = useState(null);
   const [history, setHistory] = useState([]);
+  const [accounts, setAccounts] = useState([]);
+
   const [budget, setBudget] = useState(""); 
   const [days, setDays] = useState(""); 
+
   const [showForm, setShowForm] = useState(false);
   const [historyB, setHistoryB] = useState(false);
+  const [showIncome, setShowIncome] = useState(false);
+  const [showTransaction, setShowTransaction] = useState(false);
+
+  const [toAccount, setToAccount] = useState("");
+  const [amount, setAmount] = useState("");
   const [mensaje, setMensaje] = useState("");
   const navigate = useNavigate();
 
@@ -78,12 +84,69 @@ function AccountInfo() {
     }
   };
 
-  useEffect(() => {
-        fetch(`http://localhost:3227/historyBudget/${id}`)
-            .then(res => res.json())
-            .then(data => setHistory(data))
-            .catch(err => console.error(err));
-    }, []);
+  const income = async () => {
+      try{
+          const res = await fetch("http://localhost:3227/income", {
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json"
+              },
+              body: JSON.stringify({
+                  toAccId: account.id_account,
+                  amount: Number(amount)
+              })
+          });
+
+          const result = await res.text();
+
+          if (res.ok) {
+              alert("Ingreso registrado");
+              setShowIncome(false);
+
+              const updated = await fetch(`http://localhost:3227/account/${id}`);
+              const newData = await updated.json();
+
+              setAccount(newData);
+          } else {
+              alert(result);
+          }
+
+      } catch (error) {
+          console.error(error);
+      }
+  };
+
+  const transaction = async () => {
+        try {
+            const res = await fetch("http://localhost:3227/transaction", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    fromAccId: account.id_account,
+                    toAccId: toAccount,
+                    amount: Number(amount)
+                })
+            });
+
+            const result = await res.text();
+
+            if (res.ok) {
+                alert("Transacción realizada");
+                setShowTransaction(false); 
+                const updated = await fetch(`http://localhost:3227/account/${id}`);
+                const newData = await updated.json();
+
+                setAccount(newData);
+            } else {
+                alert(result);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+    };
+
 
   useEffect(() => {
     fetch(`http://localhost:3227/account/${id}`)
@@ -91,6 +154,15 @@ function AccountInfo() {
       .then((data) => setAccount(data))
       .catch((err) => console.log(err));
     }, [id]);
+
+    useEffect(() => {
+      const userId = localStorage.getItem("userId");
+
+      fetch(`http://localhost:3227/home?userId=${userId}`)
+        .then(res => res.json())
+        .then(data => setAccounts(data))
+        .catch(err => console.error(err));
+    }, []);
 
   const fetchHistory = async () => {
     try {
@@ -110,98 +182,184 @@ function AccountInfo() {
   const isExpired = end && now > end;
 
   return (
-    <div className = "AccountInf">
+    <div className="AccountInf">
 
-      {account.type_name === "Gasto" ? (
-        <>
+    <button className="back-btn" onClick={() => navigate(-1)}>
+      Volver
+    </button>
 
-          <button className="back-btn" onClick={() => navigate(-1)}>
-              Volver
-          </button>
+   
+    {showForm && (
+      <div
+        className="budget"
+        onClick={() => setShowForm(false)}
+      >
+        <div
+          className="budget-form"
+          onClick={(e) => e.stopPropagation()}
+        >
 
-          {showForm && (
-            <div className="budget"
-            onClick={() => setShowForm(false)}>
-              <div className="budget-form"
-              onClick={(e) => e.stopPropagation()}>
+          {mensaje && <p className="mensaje">{mensaje}</p>}
 
-                {mensaje && <p className="mensaje">{mensaje}</p>}
+          <Input
+            label="Monto del presupuesto"
+            type="number"
+            placeholder="Ingrese monto para el presupuesto"
+            value={budget}
+            onChange={(e) => {
+              setBudget(e.target.value);
+              setMensaje("");
+            }}
+          />
 
-                <Input
-                  label = "Monto del presupuesto"
-                  type = "number"
-                  placeholder= "Ingrese monto para el presupuesto"
-                  value = {budget}
-                  onChange={(e) => {
-                    setBudget(e.target.value);
-                    setMensaje("");
-                  }}
-                />
+          <Input
+            label="Periodo en días del presupuesto"
+            type="number"
+            placeholder="Ingrese la cantidad de días"
+            value={days}
+            onChange={(e) => {
+              setDays(e.target.value);
+              setMensaje("");
+            }}
+          />
 
-                <Input
-                  label = "Periodo en días del presupuesto"
-                  type = "number"
-                  placeholder= "Ingrese la cantidad de días"
-                  value = {days}
-                  onChange={(e) => {
-                    setDays(e.target.value);
-                    setMensaje("");
-                  }}
-                />
+          <Button
+            text="Crear presupuesto"
+            onClick={createBudget}
+          />
 
-                <Button
-                  text="Crear presupuesto"
-                  onClick={createBudget}
-                />
+        </div>
+      </div>
+    )}
 
-              </div>
-            </div>
-          )}
+   
+    {historyB && (
+      <div
+        className="budget"
+        onClick={() => setHistoryB(false)}
+      >
+        <div
+          className="budget-form"
+          onClick={(e) => e.stopPropagation()}
+        >
 
-          {historyB && (
-            <div className="budget"
-            onClick={() => setHistoryB(false)}>
-              <div className="budget-form"
-              onClick={(e) => e.stopPropagation()}>
-                <h1>Historial de presupuestos</h1>
+          <h1>Historial de presupuestos</h1>
 
-                <table className="history-table">
-                  <thead>
-                    <tr>
-                      <th>Monto</th>
-                      <th>Inicio</th>
-                      <th>Fin</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {history.map((b, index) => (
-                      <tr key={index}>
-                        <td>{Number(b.amount).toLocaleString()}</td>
-                        <td>{new Date(b.start_date).toLocaleDateString()}</td>
-                        <td>{new Date(b.end_date).toLocaleDateString()}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+          <table className="history-table">
+            <thead>
+              <tr>
+                <th>Monto</th>
+                <th>Inicio</th>
+                <th>Fin</th>
+              </tr>
+            </thead>
 
+            <tbody>
+              {history.map((b, index) => (
+                <tr key={index}>
+                  <td>{Number(b.amount).toLocaleString()}</td>
+                  <td>{new Date(b.start_date).toLocaleDateString()}</td>
+                  <td>{new Date(b.end_date).toLocaleDateString()}</td>
+                </tr>
+              ))}
+            </tbody>
 
-              </div>
-            </div>
-          )}
+          </table>
 
-          <h2>{account.account_name}</h2>
-          <p className="account-type">{account.type_name}</p>
-          <div className = "balance-container">
-            <h1>{account.balance.toLocaleString()} {account.iso}</h1>
-          </div>
+        </div>
+      </div>
+    )}
 
-         <div className="budget-info">
+    
+    {showIncome && (
+      <div
+        className="account"
+        onClick={() => setShowIncome(false)}
+      >
+        <div
+          className="account-form"
+          onClick={(e) => e.stopPropagation()}
+        >
+
+          <Input
+            type="number"
+            placeholder="Monto"
+            value={amount}
+            onChange={(e) => setAmount(e.target.value)}
+          />
+
+          <Button
+            text="Completar"
+            onClick={income}
+          />
+
+        </div>
+      </div>
+    )}
+    
+
+    {showTransaction && (
+      <div className="account"
+      onClick={() => setShowTransaction(false)}>
+        <div className="account-form"
+        onClick={(e) => e.stopPropagation()}>
+            <select onChange={(e) => setToAccount(Number(e.target.value))}>
+              <option value="">Cuenta destino</option>
+              {accounts
+                .filter(acc =>
+                  acc.id_account !== account.id_account &&
+                  acc.account_name !== "Sistema"
+                )
+                .map(acc => (
+                  <option key={acc.id_account} value={acc.id_account}>
+                    {acc.account_name}
+                  </option>
+              ))}
+            </select>
+
+            <Input
+              type="number"
+              placeholder="Monto"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
+
+            <Button
+              text = "Completar"
+              onClick={transaction} 
+            />          
+        </div>
+      </div>
+    )}
+
+    
+    <h2>{account.account_name}</h2>
+
+    <p className="account-type">
+      {account.type_name}
+    </p>
+
+    <div className={`balance-container ${account.type_name.toLowerCase()}`}>
+      <h1>
+        {account.balance.toLocaleString()} {account.iso}
+      </h1>
+    </div>
+
+   
+    {account.type_name === "Gasto" && (
+      <>
+
+        <div className="budget-info">
 
           {account.budget !== null && account.budget !== undefined ? (
             isExpired ? (
               <>
                 <h1>Presupuesto finalizado</h1>
-                <Button text="Crear nuevo presupuesto" onClick={() => setShowForm(true)} />
+
+                <Button
+                  text="Crear nuevo presupuesto"
+                  onClick={() => setShowForm(true)}
+                />
               </>
             ) : (
               <>
@@ -217,40 +375,70 @@ function AccountInfo() {
                   }}
                 />
               </>
-              
             )
           ) : (
             <>
               <h1>No hay presupuesto definido</h1>
-              <Button text="Poner presupuesto" onClick={() => setShowForm(true)} />
+
+              <Button
+                text="Poner presupuesto"
+                onClick={() => setShowForm(true)}
+              />
             </>
           )}
 
-         </div>
+        </div>
 
-          
-        
+      </>
+    )}
 
-        </>
-      ) : (
-        
-          <>
-            <button className="back-btn" onClick={() => navigate(-1)}>
-                Volver
-            </button>
-            <h2>{account.account_name}</h2>
-            <p className="account-type">{account.type_name}</p>
-            <div className = "balance-container">
-              <h1>{account.balance.toLocaleString()} {account.iso}</h1>
-            </div>
-            
-            
-          </>
-      )} 
+    
+    {account.type_name === "Ingreso" && (
+      <div className="account-actions">
+        <Button
+          text="Registrar ingreso"
+          onClick={() => {
+            setShowIncome(true);
+            setAmount("");
+          }}
+        />
 
+        <Button
+          text="Transacción"
+          onClick={() => {
+            setShowTransaction(true);
+            setToAccount("");
+            setAmount("");
+          }}
+        />
+      </div>
+    )}
 
-       
-    </div>
+   
+    {account.type_name === "Activo" && (
+      <div className="account-actions">
+
+        <Button
+          text="Registrar ingreso"
+          onClick={() => {
+            setShowIncome(true);
+            setAmount("");
+          }}
+        />
+
+        <Button
+          text="Transacción"
+          onClick={() => {
+            setShowTransaction(true);
+            setToAccount("");
+            setAmount("");
+          }}
+        />
+
+      </div>
+    )}
+
+  </div>
     );
 }
 

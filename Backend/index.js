@@ -35,7 +35,6 @@ db.connect((err) => {
     }
 });
 
-/*Logica del backend para verificar que los datos sí están en la DB*/ 
 app.post("/login", (req, res) => {
     const { email, password } = req.body;
 
@@ -81,7 +80,6 @@ app.post("/login", (req, res) => {
     }); 
 });
 
-/*Logica del backend para el INSERT de los datos a la DB*/ 
 app.post("/signup", (req, res) => {
     const { name, last1, last2, email, password } = req.body;
 
@@ -148,6 +146,7 @@ app.get("/home", (req, res) => {
         JOIN currencyType c ON c.id_currency = a.id_currency
         JOIN accounttype t ON t.id_type = a.id_type
         WHERE a.id_user = ?  
+        AND a.account_name != 'Sistema'
     `
 
     db.query(sqlAcc, [userId], (err, result) => {
@@ -222,20 +221,61 @@ app.get("/account/:id", (req, res) => {
 });
 
 app.post("/createBudget", (req, res) => {
+
     const { accountId, amount, days } = req.body;
 
-    const sql = `
-        INSERT INTO budget (id_account, amount, start_date, end_date)
-        VALUES (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL ? DAY))
-    `;
+    db.beginTransaction((err) => {
 
-    db.query(sql, [accountId, amount, days], (err, result) => {
         if (err) {
-            console.log(err);
-            return res.status(500).send("Error al crear presupuesto");
+            return res.status(500).send("Error");
         }
 
-        res.json({ message: "Budget creado correctamente" });
+        const resetBalance = `
+            UPDATE account
+            SET balance = 0
+            WHERE id_account = ?
+        `;
+
+        db.query(resetBalance, [accountId], (err) => {
+
+            if (err) {
+                return db.rollback(() => {
+                    console.error(err);
+                    res.status(500).send("Error reseteando balance");
+                });
+            }
+
+            const sql = `
+                INSERT INTO budget
+                (id_account, amount, start_date, end_date)
+                VALUES
+                (?, ?, NOW(), DATE_ADD(NOW(), INTERVAL ? DAY))
+            `;
+
+            db.query(sql, [accountId, amount, days], (err) => {
+
+                if (err) {
+                    return db.rollback(() => {
+                        console.error(err);
+                        res.status(500).send("Error al crear presupuesto");
+                    });
+                }
+
+                db.commit((err) => {
+
+                    if (err) {
+                        return db.rollback(() => {
+                            console.error(err);
+                            res.status(500).send("Error commit");
+                        });
+                    }
+
+                    res.json({
+                        message: "Budget creado correctamente"
+                    });
+                });
+            });
+        });
     });
 });
 
@@ -310,18 +350,21 @@ app.get("/transactions/:userId", (req, res) => {
     const sql = `
         SELECT 
             t.amount,
-            t.created_at,
+            t.date,
             a1.account_name AS from_account,
             a2.account_name AS to_account
-        FROM transaction t
+        FROM \`transaction\` t
         JOIN account a1 ON a1.id_account = t.id_orig_account
         JOIN account a2 ON a2.id_account = t.id_dest_account
         WHERE a1.id_user = ? OR a2.id_user = ?
-        ORDER BY t.created_at DESC
+        ORDER BY t.date DESC
     `;
 
     db.query(sql, [userId, userId], (err, result) => {
-        if (err) return res.status(500).send("Error");
+        if (err) {
+            console.error(err);
+            return res.status(500).send("Error");
+        }
         res.json(result);
     });
 });
@@ -333,57 +376,131 @@ app.post("/transaction", (req, res) => {
         return res.status(400).send("No puedes transferir a la misma cuenta");
     }
 
-    db.beginTransaction((err) => {
-        if (err) return res.status(500).send("Error");
+    const currencySql = `
+    SELECT id_currency
+    FROM account
+    WHERE id_account IN (?, ?)
+`;
 
-        const updateFrom = `
-            UPDATE account
-            SET balance = balance - ?
-            WHERE id_account = ? AND balance >= ?
-        `;
+db.query(
+    currencySql,
+    [fromAccId, toAccId],
+    (err, result) => {
 
-        db.query(updateFrom, [amount, fromAccId, amount], (err, result) => {
-            if (err) {
-                return db.rollback(() => res.status(500).send("Error origen"));
-            }
+        if (err) {
+            console.error(err);
+            return res.status(500).send("Error");
+        }
 
-            if (result.affectedRows === 0) {
-                return db.rollback(() => res.status(400).send("Fondos insuficientes"));
-            }
+        if (result.length < 2) {
+            return res.status(400).send("Cuenta inválida");
+        }
 
-            const updateTo = `
+        if (result[0].id_currency !== result[1].id_currency) {
+            return res
+                .status(400)
+                .send("Las cuentas deben tener la misma moneda");
+        }
+
+        db.beginTransaction((err) => {
+            if (err) return res.status(500).send("Error");
+
+            const updateFrom = `
                 UPDATE account
-                SET balance = balance + ?
-                WHERE id_account = ?
+                SET balance = balance - ?
+                WHERE id_account = ? AND balance >= ?
             `;
 
-            db.query(updateTo, [amount, toAccId], (err) => {
+            db.query(updateFrom, [amount, fromAccId, amount], (err, result) => {
                 if (err) {
-                    return db.rollback(() => res.status(500).send("Error destino"));
+                    return db.rollback(() => res.status(500).send("Error origen"));
                 }
 
-                const insertSql = `
-                    INSERT INTO transaction
-                    (id_orig_account, id_dest_account, amount, created_at)
-                    VALUES (?, ?, ?, NOW())
+                if (result.affectedRows === 0) {
+                    return db.rollback(() => res.status(400).send("Fondos insuficientes"));
+                }
+
+                const updateTo = `
+                    UPDATE account
+                    SET balance = balance + ?
+                    WHERE id_account = ?
                 `;
 
-                db.query(insertSql, [fromAccId, toAccId, amount], (err) => {
+                db.query(updateTo, [amount, toAccId], (err) => {
                     if (err) {
-                        return db.rollback(() => res.status(500).send("Error en transacción"));
+                        return db.rollback(() => res.status(500).send("Error destino"));
                     }
 
-                    db.commit((err) => {
+                    const insertSql = `
+                        INSERT INTO \`transaction\`
+                        (id_orig_account, id_dest_account, amount, date)
+                        VALUES (?, ?, ?, NOW())
+                    `;
+
+                    db.query(insertSql, [fromAccId, toAccId, amount], (err) => {
                         if (err) {
-                            return db.rollback(() => res.status(500).send("Error commit"));
+                            return db.rollback(() => res.status(500).send("Error en transacción"));
                         }
 
-                        res.send("Transacción exitosa");
+                        db.commit((err) => {
+                            if (err) {
+                                return db.rollback(() => res.status(500).send("Error commit"));
+                            }
+
+                            res.send("Transacción exitosa");
+                        });
                     });
+                });
+            });
+        });
+    }); 
+});
+
+app.post("/income", (req, res) => {
+    const {toAccId, amount } = req.body;
+
+    if (!toAccId || amount <= 0) {
+        return res.status(400).send("Datos inválidos");
+    }
+
+    db.beginTransaction((err) => {
+        console.error(err);
+        if (err) return res.status(500).send("Error");
+
+        const updateTo = `
+            UPDATE account
+            SET balance = balance + ?
+            WHERE id_account = ?
+        `;
+
+        db.query(updateTo, [amount, toAccId], (err) => {
+            if (err) {
+                console.error(err);
+                return db.rollback(() => res.status(500).send("Error destino"));
+            }
+
+            const insertSql = `
+                INSERT INTO \`transaction\`
+                (id_orig_account, id_dest_account, amount, date)
+                VALUES (1, ?, ?, NOW())
+            `;
+
+            db.query(insertSql, [toAccId, amount], (err) => {
+                if (err) {
+                    console.error(err);
+                    return db.rollback(() => res.status(500).send("Error en transacción"));
+                }
+
+                db.commit((err) => {
+                    if (err) {
+                        console.error(err);
+                        return db.rollback(() => res.status(500).send("Error commit"));
+                    }
+
+                    res.send("Registro de ingreso exitoso");
                 });
             });
         });
     });
 });
 
- 

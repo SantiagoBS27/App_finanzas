@@ -73,35 +73,40 @@ function Home(){
     };
 
     const transaction = async () => {
-    try {
-        const res = await fetch("http://localhost:3227/transaction", {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
-                fromAccount,
-                toAccount,
-                amount: Number(amount)
-            })
-        });
+    const userId = localStorage.getItem("userId");
+        try {
+            const res = await fetch("http://localhost:3227/transaction", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    fromAccId: fromAccount,
+                    toAccId: toAccount,
+                    amount: Number(amount)
+                })
+            });
 
-        const result = await res.text();
+            const result = await res.text();
 
-        if (res.ok) {
-            alert("Transacción realizada");
-            setShowTrans(false); 
-            fetchTransactions();
+            if (res.ok) {
+                alert("Transacción realizada");
+                setShowTrans(false); 
+                fetchTransactions();
 
-        } else {
-            alert(result);
+                const updated = await fetch(`http://localhost:3227/home?userId=${userId}`);
+                const newAccounts = await updated.json();
+                setAccounts(newAccounts);
+            } else {
+                alert(result);
+            }
+        } catch (error) {
+            console.error(error);
         }
-    } catch (error) {
-        console.error(error);
-    }
-};
+    };
 
 const income = async () => {
+    const userId = localStorage.getItem("userId");
     try{
         const res = await fetch("http://localhost:3227/income", {
             method: "POST",
@@ -109,7 +114,7 @@ const income = async () => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
-                toAccount,
+                toAccId: toAccount,
                 amount: Number(amount)
             })
         });
@@ -118,6 +123,13 @@ const income = async () => {
 
         if (res.ok) {
             alert("Ingreso registrado");
+            setShowIncome(false);
+
+            fetchTransactions();
+
+            const updated = await fetch(`http://localhost:3227/home?userId=${userId}`);
+            const newAccounts = await updated.json();
+            setAccounts(newAccounts);
         } else {
             alert(result);
         }
@@ -277,12 +289,12 @@ const income = async () => {
                             .filter(acc => acc.type_name !== "Gasto" && acc.type_name !== "Pasivo")
                             .map(acc => (
                                 <option key={acc.id_account} value={acc.id_account}>
-                                {acc.account_name}
+                                    {acc.account_name}
                                 </option>
                             ))}
-                            </select>
+                        </select>
 
-                            <select onChange={(e) => setToAccount(Number(e.target.value))}>
+                        <select onChange={(e) => setToAccount(Number(e.target.value))}>
                             <option value="">Cuenta destino</option>
                             {accounts
                             .filter(acc => acc.id_account !== fromAccount)
@@ -388,7 +400,7 @@ const income = async () => {
                                     <td>{t.from_account}</td>
                                     <td>{t.to_account}</td>
                                     <td>{Number(t.amount).toLocaleString()}</td>
-                                    <td>{new Date(t.created_at).toLocaleDateString()}</td>
+                                    <td>{new Date(t.date).toLocaleDateString()}</td>
                                 </tr>
                             ))}
                         </tbody>

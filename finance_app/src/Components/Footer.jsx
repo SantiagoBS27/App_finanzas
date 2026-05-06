@@ -8,7 +8,6 @@ function Footer({ onOpenBudgets }) {
         Presupuestos
       </Link>
       <Link to="/exchange" className="footer-btn">Tipo de cambio</Link>
-      <Link to="/subs" className="footer-btn">Subscripciones</Link>
     </div>
   );
 }

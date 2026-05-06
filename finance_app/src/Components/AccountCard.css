@@ -17,10 +17,6 @@
 
 }
 
-.AccCard:hover{
-    background-color: #444444;
-}
-
 .AccCard h3{
     text-align: center;
     font-size: 12px;
@@ -37,21 +33,42 @@
 }
 
 .Activo {
-  background-color: #62ad65; /* verde */
+  background: linear-gradient(135deg, #4facfe, #00f2fe);
 }
 
 .Pasivo {
-  background-color: #ff685d; /* rojo */
+  background: linear-gradient(135deg, #434343, #000000);
 }
 
 .Gasto {
-  background-color: #ffbe5c; /* naranja */
+  background: linear-gradient(135deg, #fa709a, #fee140);
 }
 
 .Ingreso {
-  background-color: #4ca9f5; /* azul */
+  background: linear-gradient(135deg, #43e97b, #38f9d7);
 }
 
 .Capital {
-  background-color: #c450d8; /* morado */
+ background: linear-gradient(135deg, #30cfd0, #330867);
 }
+
+.AccCard.Activo:hover{
+    background: linear-gradient(135deg, #3b8de3, #00c6d9);
+}
+
+.AccCard.Pasivo:hover{
+    background: linear-gradient(135deg, #2e2e2e, #111111);
+}
+
+.AccCard.Gasto:hover{
+    background: linear-gradient(135deg, #e85d8c, #f7c531);
+}
+
+.AccCard.Ingreso:hover{
+    background: linear-gradient(135deg, #35d46a, #2de0c0);
+}
+
+.AccCard.Capital:hover{
+    background: linear-gradient(135deg, #28b8ba, #24054d);
+}
+

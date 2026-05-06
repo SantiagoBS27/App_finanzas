@@ -1,8 +1,7 @@
-/* 🔹 CONTENEDOR PRINCIPAL */
 .home-container {
     height: 100vh;
     width: 100vw;
-    background-color: #fff;
+    background-color: #ffffff;
 
     display: flex;
     flex-direction: column;
@@ -11,7 +10,6 @@
     box-sizing: border-box;
 }
 
-/* 🔹 TÍTULOS */
 .home-container h1 {
     margin-top: 0;
     margin-bottom: 10px;
@@ -25,7 +23,6 @@
     font-size: 25px;
 }
 
-/* 🔹 CARDS DE CUENTAS */
 .accounts-container {
     margin-top: 50px;
     height: 30vh;
@@ -39,35 +36,33 @@
 
     scroll-snap-type: x mandatory;
 
-    background-image: url("public/images/dinero.jpg");
+    background-image: url("public/images/dinero.png");
     background-size: cover;
     background-position: center;
 
     border-radius: 10px;
 }
 
-/* 🔹 BOTÓN FLOTANTE */
 .circular-btn {
     position: relative;
-    bottom: 100px;
+    bottom: 80px;
     right: 20px;
     z-index: 1000;
 }
 
 .fab-container {
-  position: fixed;
+    position: fixed;
 
-  bottom: 30px; 
-  right: 20px;
+    bottom: 0; 
+    right: 20vw;
 
-  display: flex;
-  flex-direction: column; 
-  gap: 40px;
+    display: flex;
+    flex-direction: row; 
+    gap: 40px;
 
-  z-index: 1500;
+    z-index: 1500;
 }
 
-/* 🔹 MODAL (OVERLAY) */
 .account {
     position: fixed;
     top: 0;
@@ -81,10 +76,9 @@
     justify-content: center;
     align-items: center;
 
-    z-index: 2000; /* 🔥 CLAVE */
+    z-index: 2000; 
 }
 
-/* 🔹 CONTENIDO DEL MODAL */
 .account-form {
     position: relative;
     background: #fff;
@@ -100,7 +94,6 @@
     animation: scaleIn 0.3s ease;
 }
 
-/* 🔹 BOTÓN BACK */
 .back-btn {
     position: absolute;
     top: 20px;
@@ -112,7 +105,6 @@
     cursor: pointer;
 }
 
-/* 🔹 HISTORIAL DE TRANSACCIONES */
 .transaction-history {
     width: 88vw;
     margin-top: 20px;
@@ -129,13 +121,11 @@
     margin-bottom: 10px;
 }
 
-/* 🔹 CONTENEDOR SCROLL */
 .table-history {
-    max-height: 250px;
+    max-height: 150px;
     overflow-y: auto;
 }
 
-/* 🔹 TABLA */
 .tableT {
     width: 88vw;
     border-collapse: collapse;
@@ -148,7 +138,6 @@
     border-bottom: 1px solid #ddd;
 }
 
-/* 🔹 HEADER FIJO */
 .tableT th {
     position: sticky;
     top: 0;
@@ -157,12 +146,10 @@
     z-index: 1;
 }
 
-/* 🔹 HOVER */
 .tableT tr:hover {
     background-color: #f5f5f5;
 }
 
-/* 🔹 TABLA DE PRESUPUESTOS */
 .table-container {
     max-height: 300px;
     overflow-y: auto;
@@ -187,12 +174,55 @@
     color: #555;
 }
 
-/* 🔹 BOTONES */
 .btn {
     margin-top: 10px;
 }
 
-/* 🔹 ANIMACIONES */
+@media (min-width: 481px) and (max-width: 768px) {
+  .fab-container {
+    right: 30vw;
+}
+}
+
+@media (min-width: 769px) and (max-width: 1024px){
+
+    .fab-container {
+        bottom: 30px; 
+        right: 20px;
+
+        flex-direction: column; 
+    }
+
+    .transaction-history{
+        width: 80vw;
+    }
+
+    .tableT{
+        width: 80vw;
+    }
+
+    .table-history {
+        max-height: 250px;
+    }
+}
+
+@media (min-width: 1025px) {
+    .circular-btn {
+    bottom: 100px;
+    }
+
+    .fab-container {
+    bottom: 30px; 
+    right: 20px;
+
+    flex-direction: column; 
+    }
+
+    .table-history {
+    max-height: 250px;
+    }
+}
+
 @keyframes scaleIn {
     from {
         opacity: 0;
