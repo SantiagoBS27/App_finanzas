@@ -2,6 +2,7 @@ const express = require("express");
 const mysql = require("mysql2");
 const bcrypt = require("bcrypt");
 const cors = require("cors"); 
+const axios = require("axios");
 
 const app = express();
 const port = 3227
@@ -9,8 +10,8 @@ const port = 3227
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "22:SJ-KEE.15$",   
-    database: "app_finanzas"
+    password: "2305",   
+    database: "test"
 });
 const corsOptions = {
     origin: ["http://localhost:5173"]
@@ -185,6 +186,37 @@ app.get("/currencies", (req, res) => {
         res.json(result);
     });
 });
+
+app.get("/exchange-rate", async (req, res) => {
+    const { from, to, date } = req.query;
+
+    if (!from || !to || !date) {
+        return res.status(400).json({ message: "Faltan datos" });
+    }
+
+    try {
+        const url = `https://api.frankfurter.app/${date}?from=${from}&to=${to}`;
+        const response = await axios.get(url);
+
+        const rate = response.data.rates[to];
+
+        if (!rate) {
+            return res.status(404).json({ message: "No hay tasa disponible" });
+        }
+
+        res.json({
+            from,
+            to,
+            date: response.data.date,
+            rate
+        });
+
+    } catch (error) {
+        console.log(error.response?.data || error.message);
+        res.status(500).json({ message: "Error obteniendo tasa de cambio" });
+    }
+});
+
 
 app.get("/account/:id", (req, res) => {
     const accountId = req.params.id;
