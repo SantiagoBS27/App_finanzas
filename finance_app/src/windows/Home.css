@@ -14,18 +14,18 @@
     margin-top: 0;
     margin-bottom: 10px;
     text-align: center;
-    font-size: 35px;
+    font-size: 25px;
 }
 
 .home-container h2 {
     margin-top: 0;
     text-align: center;
-    font-size: 25px;
+    font-size: 15px;
 }
 
 .accounts-container {
     margin-top: 0;
-    height: 30vh;
+    height: 20vh;
 
     display: flex;
     align-items: center;
@@ -54,7 +54,7 @@
     position: fixed;
 
     bottom: 0; 
-    right: 20vw;
+    right: 18vw;
 
     display: flex;
     flex-direction: row; 
@@ -210,6 +210,12 @@
 }
 
 @media (min-width: 1025px) {
+    .home-container h1{
+        font-size: 35px;
+    }
+    .home-container h2{
+        font-size: 25px;
+    }
     .circular-btn {
     bottom: 100px;
     }
@@ -227,6 +233,7 @@
 
     .accounts-container{
         margin-top: 50px;
+        height: 30vh;
     }
 }
 

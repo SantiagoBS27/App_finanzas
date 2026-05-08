@@ -30,7 +30,7 @@ function ExchangeRate() {
 
     try {
       const res = await fetch(
-        `http://localhost:3227/exchange-rate?from=${from}&to=${to}&date=${date}`
+        `${import.meta.env.VITE_API_URL}/exchange-rate?from=${from}&to=${to}&date=${date}`
       );
 
       const data = await res.json();

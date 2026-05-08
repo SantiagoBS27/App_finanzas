@@ -114,6 +114,7 @@ const income = async () => {
                 "Content-Type": "application/json"
             },
             body: JSON.stringify({
+                fromAccount, 
                 toAccId: toAccount,
                 amount: Number(amount)
             })
@@ -196,6 +197,7 @@ const income = async () => {
         <div className="home-container">
             <h1> Bienvenido, {name}!! </h1>
             <h2> Cuentas </h2>
+
 
             {showForm && (
                 <div className="account" 
@@ -286,7 +288,7 @@ const income = async () => {
                             <option value="">Cuenta origen</option>
                             
                             {accounts
-                            .filter(acc => acc.type_name !== "Gasto" && acc.type_name !== "Pasivo")
+                            .filter(acc => acc.type_name !== "Gasto" && acc.type_name !== "Pasivo" && acc.type_name !== "Activo")
                             .map(acc => (
                                 <option key={acc.id_account} value={acc.id_account}>
                                     {acc.account_name}
@@ -328,10 +330,22 @@ const income = async () => {
                     <div className="account-form"
                     onClick={(e) => e.stopPropagation()}>
 
+                        <select onChange={(e) => setFromAccount(Number(e.target.value))}>
+                            <option value="">Cuenta origen</option>
+                            
+                            {accounts
+                            .filter(acc => acc.type_name !== "Gasto" && acc.type_name !== "Pasivo" && acc.type_name !== "Ingreso")
+                            .map(acc => (
+                                <option key={acc.id_account} value={acc.id_account}>
+                                    {acc.account_name}
+                                </option>
+                            ))}
+                        </select>
+
                         <select onChange={(e) => setToAccount(Number(e.target.value))}>
                             <option value="">Cuenta destino</option>
                             {accounts
-                            .filter(acc => acc.type_name !== "Gasto" && acc.type_name !== "Pasivo")
+                            .filter(acc => acc.type_name !== "Gasto" && acc.type_name !== "Pasivo" && acc.type_name !== "Activo")
                             .map(acc => (
                                 <option key={acc.id_account} value={acc.id_account}>
                                 {acc.account_name}

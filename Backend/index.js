@@ -10,8 +10,8 @@ const port = 3227
 const db = mysql.createConnection({
     host: "localhost",
     user: "root",
-    password: "2305",   
-    database: "test"
+    password: "22:SJ-KEE.15$",   
+    database: "app_finanzas"
 });
 const corsOptions = {
     origin: [
@@ -126,6 +126,25 @@ app.post("/signup", (req, res) => {
                         console.log(err);
                         return res.status(500).send("Error al registrar usuario");
                     } else {
+                        const userId = result.insertId; 
+                        const defaultAccounts = [
+                            { name: "Trabajo", type: 1 },
+                            { name: "Salario", type: 2 },
+                            { name: "Comida", type: 3 },
+                            { name: "Ahorros", type: 1 }
+                        ];
+                        defaultAccounts.forEach(acc => {
+                            const sql = `
+                                INSERT INTO account 
+                                (id_user, id_currency, id_type, account_name, created_at)
+                                VALUES(?, ?, ?, ?, NOW())
+                            `;
+                            db.query(sql, [userId, 1, acc.type, acc.name], (err, result) => {
+                                if (err) {
+                                    console.log(err);
+                                }
+                            }); 
+                        }); 
                         res.send("Usuario creado correctamente");
                     }
                 }); 
@@ -414,13 +433,9 @@ app.post("/transaction", (req, res) => {
     SELECT id_currency
     FROM account
     WHERE id_account IN (?, ?)
-`;
+    `;
 
-db.query(
-    currencySql,
-    [fromAccId, toAccId],
-    (err, result) => {
-
+    db.query(currencySql, [fromAccId, toAccId], (err, result) => {
         if (err) {
             console.error(err);
             return res.status(500).send("Error");
@@ -437,8 +452,11 @@ db.query(
         }
 
         db.beginTransaction((err) => {
-            if (err) return res.status(500).send("Error");
-
+            if (err) {
+                console.error(err);
+                return res.status(500).send("Error");
+            }
+ 
             const updateFrom = `
                 UPDATE account
                 SET balance = balance - ?
@@ -491,50 +509,92 @@ db.query(
 });
 
 app.post("/income", (req, res) => {
-    const {toAccId, amount } = req.body;
+    const {fromAccount, toAccId, amount} = req.body;
+
+    if (Number(fromAccount) === Number(toAccId)) {
+        return res.status(400).send("No puedes transferir a la misma cuenta");
+    }
 
     if (!toAccId || amount <= 0) {
         return res.status(400).send("Datos inválidos");
     }
 
-    db.beginTransaction((err) => {
-        console.error(err);
-        if (err) return res.status(500).send("Error");
+    const currencySql = `
+    SELECT id_currency
+    FROM account
+    WHERE id_account IN (?, ?)
+    `;
 
-        const updateTo = `
-            UPDATE account
-            SET balance = balance + ?
-            WHERE id_account = ?
-        `;
+    db.query(currencySql, [fromAccount, toAccId], (err, result) => {
+        if (err) {
+            console.error(err);
+            return res.status(500).send("Error");
+        }
 
-        db.query(updateTo, [amount, toAccId], (err) => {
+        if (result.length < 2) {
+            return res.status(400).send("Cuenta inválida");
+        }
+
+        if (result[0].id_currency !== result[1].id_currency) {
+            return res
+                .status(400)
+                .send("Las cuentas deben tener la misma moneda");
+        }
+
+        db.beginTransaction((err) => {
             if (err) {
                 console.error(err);
-                return db.rollback(() => res.status(500).send("Error destino"));
+                return res.status(500).send("Error");
             }
 
-            const insertSql = `
-                INSERT INTO \`transaction\`
-                (id_orig_account, id_dest_account, amount, date)
-                VALUES (1, ?, ?, NOW())
+            const updateFrom = `
+                UPDATE account
+                SET balance = balance + ?
+                WHERE id_account = ?
             `;
 
-            db.query(insertSql, [toAccId, amount], (err) => {
+            db.query(updateFrom, [amount, fromAccount], (err) => {
                 if (err) {
                     console.error(err);
-                    return db.rollback(() => res.status(500).send("Error en transacción"));
+                    return db.rollback(() => res.status(500).send("Error origen"));
                 }
 
-                db.commit((err) => {
+                const updateTo = `
+                    UPDATE account
+                    SET balance = balance + ?
+                    WHERE id_account = ?
+                `;
+
+                db.query(updateTo, [amount, toAccId], (err) => {
                     if (err) {
                         console.error(err);
-                        return db.rollback(() => res.status(500).send("Error commit"));
+                        return db.rollback(() => res.status(500).send("Error destino"));
                     }
 
-                    res.send("Registro de ingreso exitoso");
+                    const insertSql = `
+                        INSERT INTO \`transaction\`
+                        (id_orig_account, id_dest_account, amount, date)
+                        VALUES (?, ?, ?, NOW())
+                    `;
+
+                    db.query(insertSql, [fromAccount, toAccId, amount], (err) => {
+                        if (err) {
+                            console.error(err);
+                            return db.rollback(() => res.status(500).send("Error en transacción"));
+                        }
+
+                        db.commit((err) => {
+                            if (err) {
+                                console.error(err);
+                                return db.rollback(() => res.status(500).send("Error commit"));
+                            }
+
+                            res.send("Registro de ingreso exitoso");
+                        });
+                    });
                 });
-            });
+            }); 
         });
     });
-});
+}); 
 

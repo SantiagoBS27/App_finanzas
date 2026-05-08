@@ -1,7 +1,7 @@
 .AccCard{
     text-align: center;
     min-width: 160px;
-    height: 190px;
+    height: 120px;
 
     display: flex;
     flex-direction: column;
@@ -72,3 +72,18 @@
     background: linear-gradient(135deg, #28b8ba, #24054d);
 }
 
+@media (min-width: 481px) and (max-width: 768px) {
+  
+}
+
+@media (min-width: 769px) and (max-width: 1024px){
+    .AccCard{
+    height: 190px;
+}
+}
+
+@media (min-width: 1025px) {
+    .AccCard{
+        height: 190px;
+    }
+}
