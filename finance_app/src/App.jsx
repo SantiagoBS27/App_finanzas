@@ -3,6 +3,7 @@ import Login from "./windows/Login";
 import Signup from "./windows/Signup"; 
 import Home from "./windows/Home"; 
 import AccountInfo from "./windows/AccountInfo"
+import ExchangeRate from "./windows/ExchangeRate";
 
 function App() {
   return(
@@ -11,6 +12,7 @@ function App() {
       <Route path="/signup" element={<Signup />} />
       <Route path="/home" element={<Home/>} />
       <Route path="/account/:id" element={<AccountInfo />} />
+      <Route path="/exchange" element={<ExchangeRate />} />
       
     </Routes>
   ); 
