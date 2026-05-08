@@ -18,14 +18,14 @@ const corsOptions = {
     ]
 }
 
-app.use(cors(corsOptions)); 
+app.use(cors()); 
 app.use(express.json()); 
 
 app.get("/api", (req, res) =>{
     res.send("API funcionando");
 }); 
 
-app.listen(port, () => {
+app.listen(port, "0.0.0.0", () => {
   console.log("Servidor corriendo en http://localhost:"+port);
 });
 

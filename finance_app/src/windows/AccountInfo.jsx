@@ -50,7 +50,7 @@ function AccountInfo() {
     if(!validarDatos()) return; 
 
     try{
-      const res = await fetch("http://localhost:3227/createBudget", {
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/createBudget`, {
         method: "POST", 
         headers: {
           "Content-Type": "application/json"
@@ -71,7 +71,7 @@ function AccountInfo() {
         setBudget("");
         setDays("");
 
-        const updated = await fetch(`http://localhost:3227/account/${id}`);
+        const updated = await fetch(`${import.meta.env.VITE_API_URL}/account/${id}`);
         const newData = await updated.json();
         setAccount(newData);
 
@@ -86,7 +86,7 @@ function AccountInfo() {
 
   const income = async () => {
       try{
-          const res = await fetch("http://localhost:3227/income", {
+          const res = await fetch(`${import.meta.env.VITE_API_URL}/income`, {
               method: "POST",
               headers: {
                   "Content-Type": "application/json"
@@ -103,7 +103,7 @@ function AccountInfo() {
               alert("Ingreso registrado");
               setShowIncome(false);
 
-              const updated = await fetch(`http://localhost:3227/account/${id}`);
+              const updated = await fetch(`${import.meta.env.VITE_API_URL}/account/${id}`);
               const newData = await updated.json();
 
               setAccount(newData);
@@ -118,7 +118,7 @@ function AccountInfo() {
 
   const transaction = async () => {
         try {
-            const res = await fetch("http://localhost:3227/transaction", {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/transaction`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -135,7 +135,7 @@ function AccountInfo() {
             if (res.ok) {
                 alert("Transacción realizada");
                 setShowTransaction(false); 
-                const updated = await fetch(`http://localhost:3227/account/${id}`);
+                const updated = await fetch(`${import.meta.env.VITE_API_URL}/account/${id}`);
                 const newData = await updated.json();
 
                 setAccount(newData);
@@ -149,7 +149,7 @@ function AccountInfo() {
 
 
   useEffect(() => {
-    fetch(`http://localhost:3227/account/${id}`)
+    fetch(`${import.meta.env.VITE_API_URL}/account/${id}`)
       .then((res) => res.json())
       .then((data) => setAccount(data))
       .catch((err) => console.log(err));
@@ -158,7 +158,7 @@ function AccountInfo() {
     useEffect(() => {
       const userId = localStorage.getItem("userId");
 
-      fetch(`http://localhost:3227/home?userId=${userId}`)
+      fetch(`${import.meta.env.VITE_API_URL}/home?userId=${userId}`)
         .then(res => res.json())
         .then(data => setAccounts(data))
         .catch(err => console.error(err));
@@ -166,7 +166,7 @@ function AccountInfo() {
 
   const fetchHistory = async () => {
     try {
-      const res = await fetch(`http://localhost:3227/historybudget/${account.id_account}`);
+      const res = await fetch(`${import.meta.env.VITE_API_URL}/historybudget/${account.id_account}`);
       const data = await res.json();
       setHistory(data);
     } catch (error) {

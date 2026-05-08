@@ -24,7 +24,7 @@
 }
 
 .accounts-container {
-    margin-top: 50px;
+    margin-top: 0;
     height: 30vh;
 
     display: flex;
@@ -204,6 +204,9 @@
     .table-history {
         max-height: 250px;
     }
+    .accounts-container{
+        margin-top: 50px;
+    }
 }
 
 @media (min-width: 1025px) {
@@ -220,6 +223,10 @@
 
     .table-history {
     max-height: 250px;
+    }
+
+    .accounts-container{
+        margin-top: 50px;
     }
 }
 

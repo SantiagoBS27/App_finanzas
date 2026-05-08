@@ -38,7 +38,7 @@ function Home(){
     const createAccount = async () => {
         const userId = localStorage.getItem("userId");
         try{
-            const res = await fetch("http://localhost:3227/createAccount", {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/createAccount`, {
                 method: "POST", 
                 headers: {
                     "Content-Type": "application/json"
@@ -60,7 +60,7 @@ function Home(){
                 setAccountName("");
 
                 
-                const updated = await fetch(`http://localhost:3227/home?userId=${userId}`);
+                const updated = await fetch(`${import.meta.env.VITE_API_URL}/home?userId=${userId}`);
                 const newAccounts = await updated.json();
                 setAccounts(newAccounts);
             }else{
@@ -75,7 +75,7 @@ function Home(){
     const transaction = async () => {
     const userId = localStorage.getItem("userId");
         try {
-            const res = await fetch("http://localhost:3227/transaction", {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/transaction`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json"
@@ -94,7 +94,7 @@ function Home(){
                 setShowTrans(false); 
                 fetchTransactions();
 
-                const updated = await fetch(`http://localhost:3227/home?userId=${userId}`);
+                const updated = await fetch(`${import.meta.env.VITE_API_URL}/home?userId=${userId}`);
                 const newAccounts = await updated.json();
                 setAccounts(newAccounts);
             } else {
@@ -108,7 +108,7 @@ function Home(){
 const income = async () => {
     const userId = localStorage.getItem("userId");
     try{
-        const res = await fetch("http://localhost:3227/income", {
+        const res = await fetch(`${import.meta.env.VITE_API_URL}/income`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json"
@@ -127,7 +127,7 @@ const income = async () => {
 
             fetchTransactions();
 
-            const updated = await fetch(`http://localhost:3227/home?userId=${userId}`);
+            const updated = await fetch(`${import.meta.env.VITE_API_URL}/home?userId=${userId}`);
             const newAccounts = await updated.json();
             setAccounts(newAccounts);
         } else {
@@ -142,7 +142,7 @@ const income = async () => {
     const fetchBudgets = async () => {
         const userId = localStorage.getItem("userId");
         try {
-            const res = await fetch(`http://localhost:3227/budgets/${userId}`);
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/budgets/${userId}`);
             const data = await res.json();
             setBudgets(data);
         } catch (error) {
@@ -154,7 +154,7 @@ const income = async () => {
         const userId = localStorage.getItem("userId");
 
         try {
-            const res = await fetch(`http://localhost:3227/transactions/${userId}`);
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/transactions/${userId}`);
             const data = await res.json();
             setTransactions(data);
         } catch (err) {
@@ -168,21 +168,21 @@ const income = async () => {
 
         setName(savedName);
 
-        fetch(`http://localhost:3227/home?userId=${userId}`)
+        fetch(`${import.meta.env.VITE_API_URL}/home?userId=${userId}`)
             .then(res => res.json())
             .then(data => setAccounts(data))
             .catch(err => console.error(err));
     }, []);
 
     useEffect(() => {
-        fetch("http://localhost:3227/currencies")
+        fetch(`${import.meta.env.VITE_API_URL}/currencies`)
             .then(res => res.json())
             .then(data => setCurrencies(data))
             .catch(err => console.error(err));
     }, []);
 
     useEffect(() => {
-        fetch("http://localhost:3227/types")
+        fetch(`${import.meta.env.VITE_API_URL}/types`)
             .then(res => res.json())
             .then(data => setTypes(data))
             .catch(err => console.error(err));
