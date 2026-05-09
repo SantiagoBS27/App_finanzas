@@ -76,69 +76,80 @@ function Signup(){
 
     return(
         <div className="page-body">
-            <div className="form-container">
-                <h1>Crear cuenta</h1>
+            <div className="login-wrapper">
+                <div className="left-side">
+                        <img src="/images/cerdi.ico" alt="Logo" />
 
-                {mostrarModal && (
-                    <div className="modal">
-                        <div className="modal-box">
-                            <p>Usuario creado con éxito</p>
-                            <Button
-                            text="Continuar"
-                            onClick={() => window.location.href = "/"}
-                            />
-                        </div>
+                        <h1 className="brand-title">
+                            Fluj<span>ex</span>
+                        </h1>
+
                     </div>
-                )}
 
-                {mensaje && <p className="mensaje">{mensaje}</p>}
+                <div className="form-container">
+                    <h1>Crear cuenta</h1>
 
-                <Input
-                    label="Nombre"
-                    type="text"
-                    placeholder="Nombre"
-                    value={name}
-                    onChange={(e) => setName(e.target.value)}
-                />
+                    {mostrarModal && (
+                        <div className="modal">
+                            <div className="modal-box">
+                                <p>Usuario creado con éxito</p>
+                                <Button
+                                text="Continuar"
+                                onClick={() => window.location.href = "/"}
+                                />
+                            </div>
+                        </div>
+                    )}
 
-                <Input
-                    label="Primer apellido"
-                    type="text"
-                    placeholder="Apellido"
-                    value={firstname}
-                    onChange={(e) => setFirstName(e.target.value)}
-                />
+                    {mensaje && <p className="mensaje">{mensaje}</p>}
 
-                <Input
-                    label="Segundo apellido"
-                    type="text"
-                    placeholder="Apellido"
-                    value={secondname}
-                    onChange={(e) => setSecondName(e.target.value)}
-                />
+                    <Input
+                        label="Nombre"
+                        type="text"
+                        placeholder="Nombre"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                    />
 
-                <Input
-                    label="Correo"
-                    type="email"
-                    placeholder="ejemplo@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
+                    <Input
+                        label="Primer apellido"
+                        type="text"
+                        placeholder="Apellido"
+                        value={firstname}
+                        onChange={(e) => setFirstName(e.target.value)}
+                    />
 
-                <Input
-                    label="Contraseña"
-                    type="password"
-                    placeholder="Ingrese una contraseña"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                /> 
+                    <Input
+                        label="Segundo apellido"
+                        type="text"
+                        placeholder="Apellido"
+                        value={secondname}
+                        onChange={(e) => setSecondName(e.target.value)}
+                    />
+
+                    <Input
+                        label="Correo"
+                        type="email"
+                        placeholder="ejemplo@email.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+
+                    <Input
+                        label="Contraseña"
+                        type="password"
+                        placeholder="Ingrese una contraseña"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    /> 
 
 
-                <Button 
-                    text="Crear cuenta" 
-                    onClick={handleSignup} 
-                />
+                    <Button 
+                        text="Crear cuenta" 
+                        onClick={handleSignup} 
+                    />
 
+                </div>
             </div>
         </div>
     );

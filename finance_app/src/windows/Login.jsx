@@ -6,6 +6,7 @@ import { useState } from "react";
 function Login(){
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [mostrarModal, setMostrarModal] = useState(false);
 
     const handleLogin = async () => {
         try {
@@ -26,8 +27,7 @@ function Login(){
                 localStorage.setItem("userId", data.userId);
                 localStorage.setItem("name", data.name); 
 
-                alert("Login exitoso");
-                window.location.href = "/home"
+                setMostrarModal(true);
             } else {
                 alert(data.message);
             }
@@ -40,35 +40,58 @@ function Login(){
 
     return(
         <div className="page-body">
-            <div className="form-container">
-                <h1> Iniciar sesion </h1>
+            <div className="login-wrapper">
+                <div className="left-side">
+                    <img src="/images/cerdi.ico" alt="Logo" />
 
-                <Input
-                    label="Correo"
-                    type="email"
-                    placeholder="ejemplo@email.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                />
+                    <h1 className="brand-title">
+                        Fluj<span>ex</span>
+                    </h1>
 
-                <Input
-                    label="Contraseña"
-                    type="password"
-                    placeholder="Ingrese su contraseña"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                />
-                
-                <Button 
-                    text="Ingresar" 
-                    onClick={handleLogin} 
-                />
-
-                <div class="signup">
-                    ¿No tiene una cuenta?
-                    <a href="/Signup"> Crear una cuenta. </a>
                 </div>
 
+                <div className="form-container">
+                    <h1> Bienvenido de vuelta </h1>
+
+                    {mostrarModal && (
+                        <div className="modal">
+                            <div className="modal-box">
+                                <p>Usuario validado con éxito</p>
+                                <Button
+                                text="Continuar"
+                                onClick={() => window.location.href = "/home"}
+                                />
+                            </div>
+                        </div>
+                    )}
+
+                    <Input
+                        label="Correo"
+                        type="email"
+                        placeholder="ejemplo@email.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                    />
+
+                    <Input
+                        label="Contraseña"
+                        type="password"
+                        placeholder="Ingrese su contraseña"
+                        value={password}
+                        onChange={(e) => setPassword(e.target.value)}
+                    />
+                    
+                    <Button 
+                        text="Ingresar" 
+                        onClick={handleLogin} 
+                    />
+
+                    <div class="signup">
+                        ¿No tiene una cuenta?
+                        <a href="/Signup"> Crear una cuenta. </a>
+                    </div>
+
+                </div>
             </div>
         </div>
     );

@@ -2,16 +2,27 @@
     width: 100%;
     padding: 8px 5px;
     font-size: 16px;
+    color: #000000;
 
-    border: none;
-    border-bottom: 1px solid #000;
-    outline: none;
+    border: 1px solid #3a3a3a;
+    outline: 1px solid #3a3a3a;
     background: transparent;
     margin-bottom: 15px;
+    border-radius: 10px;
 }
 
 .input-group label {
     font-size: 18px;
+    color: #3a3a3a;
+}
+
+.input-group input:focus{
+    border: 1px solid #00df56;
+    outline: 1px solid #00df56;
+
+    background-color: #eef7ff;
+
+    transition: 0.2s;
 }
 
 @media (min-width: 769px) and (max-width: 1024px){
