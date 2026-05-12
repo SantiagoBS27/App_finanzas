@@ -2,7 +2,7 @@ import AccountCard from "../Components/AccountCard";
 import CircularButton from "../Components/CircularButton"; 
 import Button from "../Components/Button"; 
 import Input from "../Components/Input"; 
-import Footer from "../Components/Footer"
+import Sidebar from "../Components/SideBar";
 import "./Home.css"; 
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -16,8 +16,8 @@ function Home(){
 
     const [showTransaction, setShowTrans] = useState(false);
     const [showForm, setShowForm] = useState(false);
-    const [showBudgets, setShowBudgets] = useState(false);
     const [showIncome, setShowIncome] = useState(false);
+    const [showSidebar, setShowSidebar] = useState(false);
 
     const [accountName, setAccountName] = useState("");
 
@@ -28,10 +28,20 @@ function Home(){
     const [types, setTypes] = useState([])
     const [selectedType, setSelectedType] = useState("")
 
+    const [searchAccount, setSearchAccount] = useState("");
+    const [startDate, setStartDate] = useState("");
+    const [endDate, setEndDate] = useState("");
+    const [searAmount, setSearAmount] = useState("");
+    const [searchBudgetAccount, setSearchBudgetAccount] = useState("");
+    const [budgetStartDate, setBudgetStartDate] = useState("");
+    const [budgetEndDate, setBudgetEndDate] = useState("");
+    const [budgetAmount, setBudgetAmount] = useState("");
+
     const [fromAccount, setFromAccount] = useState("");
     const [toAccount, setToAccount] = useState("");
     const [amount, setAmount] = useState("");
     const [date, setDate] = useState("");
+    const [activeSection, setActiveSection] = useState("accounts");
 
     const navigate = useNavigate();
 
@@ -140,6 +150,59 @@ const income = async () => {
     }
 }; 
 
+const filteredTransactions = transactions.filter((t) => {
+
+    const accountMatch =
+        !searchAccount ||
+
+        t.from_account
+            .toLowerCase()
+            .includes(searchAccount.toLowerCase()) ||
+
+        t.to_account
+            .toLowerCase()
+            .includes(searchAccount.toLowerCase());
+
+    const transactionDate = new Date(t.date);
+
+    const dateMatch =
+        (!startDate || transactionDate >= new Date(startDate)) &&
+        (!endDate || transactionDate <= new Date(endDate));
+
+    const amountMatch =
+        !searAmount ||
+        Number(t.amount) === Number(searAmount);
+
+    return accountMatch && dateMatch && amountMatch;
+});
+
+const filteredBudgets = budgets.filter((b) => {
+
+    const accountMatch =
+        !searchBudgetAccount ||
+
+        b.account_name
+            .toLowerCase()
+            .includes(searchBudgetAccount.toLowerCase());
+
+    const startMatch =
+        !budgetStartDate ||
+        new Date(b.start_date) >= new Date(budgetStartDate);
+
+    const endMatch =
+        !budgetEndDate ||
+        new Date(b.end_date) <= new Date(budgetEndDate);
+
+    const amountMatch =
+        !budgetAmount ||
+        Number(b.amount) === Number(budgetAmount);
+
+    return accountMatch &&
+           startMatch &&
+           endMatch &&
+           amountMatch;
+});
+
     const fetchBudgets = async () => {
         const userId = localStorage.getItem("userId");
         try {
@@ -194,10 +257,206 @@ const income = async () => {
     }, []);
 
     return(
-        <div className="home-container">
-            <h1> Bienvenido, {name}!! </h1>
-            <h2> Cuentas </h2>
+        <div className="dashboard">
 
+            <Sidebar
+                showSidebar={showSidebar}
+                setShowSidebar={setShowSidebar}
+                setActiveSection={setActiveSection}
+                setShowForm={setShowForm}
+                fetchBudgets={fetchBudgets}
+                fetchTransactions={fetchTransactions}
+                setShowTrans={setShowTrans}
+                setShowIncome={setShowIncome}
+            />
+            
+            <button
+                className="menu-btn"
+                onClick={() => setShowSidebar(true)}
+            >
+                ☰
+            </button>
+
+            <div className="main-content">
+
+                <h1>Bienvenido, {name}!!</h1>
+
+                {activeSection === "accounts" && (
+                    <>
+                        <h2>Cuentas</h2>
+
+                        <div className="accounts-grid">
+
+                            {accounts.map((acc) => (
+                                <AccountCard
+                                    key={acc.id_account}
+                                    name={acc.account_name}
+                                    balance={acc.balance}
+                                    iso={acc.iso}
+                                    type={acc.type_name}
+                                    onClick={() => navigate(`/account/${acc.id_account}`)}
+                                />
+                            ))}
+
+                        </div>
+                    </>
+                )}
+
+                {activeSection === "history" && (
+                    <div className="transaction-history">
+
+                        <h2>Historial de transacciones</h2>
+
+                        <div className="filters-container">
+
+                            <Input
+                                type="text"
+                                placeholder="Buscar cuenta"
+                                value={searchAccount}
+                                onChange={(e) => setSearchAccount(e.target.value)}
+                            />
+
+                            <Input
+                                type="date"
+                                value={startDate}
+                                onChange={(e) => setStartDate(e.target.value)}
+                            />
+
+                            <Input
+                                type="date"
+                                value={endDate}
+                                onChange={(e) => setEndDate(e.target.value)}
+                            />
+
+                            <Input
+                                type="number"
+                                placeholder="Monto exacto"
+                                value={searAmount}
+                                onChange={(e) => setSearAmount(e.target.value)}
+                            />
+
+                            <Button
+                                text="Limpiar filtros"
+                                onClick={() => {
+                                    setSearchAccount("");
+                                    setStartDate("");
+                                    setEndDate("");
+                                    setSearAmount("");
+                                }}
+                            />
+
+                        </div>
+
+                        <div className="table-history">
+
+                            <table className="tableT">
+
+                                <thead>
+                                    <tr>
+                                        <th>Cuenta origen</th>
+                                        <th>Cuenta destino</th>
+                                        <th>Monto</th>
+                                        <th>Fecha</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {filteredTransactions.map((t, index) => (
+                                        <tr key={index}>
+                                            <td>{t.from_account}</td>
+                                            <td>{t.to_account}</td>
+                                            <td>{Number(t.amount).toLocaleString()}</td>
+                                            <td>{new Date(t.date).toLocaleDateString()}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+                )}
+
+                {activeSection === "budgets" && (
+
+                    <div className="transaction-history">
+
+                        <h2>Historial de presupuestos</h2>
+
+                        <div className="filters-container">
+
+                            <Input
+                                type="text"
+                                placeholder="Buscar cuenta"
+                                value={searchBudgetAccount}
+                                onChange={(e) => setSearchBudgetAccount(e.target.value)}
+                            />
+
+                            <Input
+                                type="date"
+                                value={budgetStartDate}
+                                onChange={(e) => setBudgetStartDate(e.target.value)}
+                            />
+
+                            <Input
+                                type="date"
+                                value={budgetEndDate}
+                                onChange={(e) => setBudgetEndDate(e.target.value)}
+                            />
+
+                            <Input
+                                type="number"
+                                placeholder="Monto exacto"
+                                value={budgetAmount}
+                                onChange={(e) => setBudgetAmount(e.target.value)}
+                            />
+
+                            <Button
+                                text="Limpiar filtros"
+                                onClick={() => {
+                                    setSearchBudgetAccount("");
+                                    setBudgetStartDate("");
+                                    setBudgetEndDate("");
+                                    setBudgetAmount("");
+                                }}
+                            />
+
+                        </div>
+
+                        <div className="table-history">
+
+                            <table className="tableT">
+
+                                <thead>
+                                    <tr>
+                                        <th>Cuenta</th>
+                                        <th>Monto</th>
+                                        <th>Inicio</th>
+                                        <th>Fin</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody>
+                                    {filteredBudgets.map((b, index) => (
+                                        <tr key={index}>
+                                            <td>{b.account_name}</td>
+                                            <td>{Number(b.amount).toLocaleString()}</td>
+                                            <td>{new Date(b.start_date).toLocaleDateString()}</td>
+                                            <td>{new Date(b.end_date).toLocaleDateString()}</td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                )}
+
+            </div>
 
             {showForm && (
                 <div className="account" 
@@ -245,38 +504,6 @@ const income = async () => {
                     </div>
                 </div>
             )} 
-
-            {showBudgets && (
-                <div className="account"
-                onClick={() => setShowBudgets(false)}>
-                    <div className="account-form"
-                    onClick={(e) => e.stopPropagation()}>
-                        <h1>Presupuestos</h1>
-                        <div className="table-container">
-                            <table className="table">
-                                <thead>
-                                    <tr>
-                                        <th>Cuenta</th>
-                                        <th>Monto</th>
-                                        <th>Inicio</th>
-                                        <th>Fin</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {budgets.map((b, index) => (
-                                    <tr key={index}>
-                                        <td>{b.account_name}</td>
-                                        <td>{Number(b.amount).toLocaleString()}</td>
-                                        <td>{new Date(b.start_date).toLocaleDateString()}</td>
-                                        <td>{new Date(b.end_date).toLocaleDateString()}</td>
-                                    </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            )}
 
             {showTransaction && (
                 <div className="account"
@@ -368,89 +595,6 @@ const income = async () => {
                     </div>
                 </div>
             )}
-
-
-
-
-            <div className="accounts-container">
-                {accounts.map((acc) => (
-                    <AccountCard
-                        key = {acc.id_account}
-                        name = {acc.account_name}
-                        balance = {acc.balance}
-                        iso = {acc.iso}
-                        type={acc.type_name}
-                        onClick={() => navigate(`/account/${acc.id_account}`)}
-                    />
-                ))}
-            </div >
-
-            <Button
-                text = "Crear una cuenta nueva"
-                onClick={() => {
-                    setShowForm(true);
-                    setSelectedCurrency(""); 
-                    setSelectedType(""); 
-                    setAccountName(""); 
-                }} 
-            />
-
-            
-            <div className="transaction-history">
-                <h2>Historial de transacciones</h2>
-                <div className="table-history">
-                    <table className="tableT">
-                        <thead>
-                            <tr>
-                                <th>Cuenta origen</th>
-                                <th>Cuenta destino</th>
-                                <th>Monto</th>
-                                <th>Fecha</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {transactions.map((t, index) => (
-                                <tr key={index}>
-                                    <td>{t.from_account}</td>
-                                    <td>{t.to_account}</td>
-                                    <td>{Number(t.amount).toLocaleString()}</td>
-                                    <td>{new Date(t.date).toLocaleDateString()}</td>
-                                </tr>
-                            ))}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-                
-            
-
-
-            <div className="fab-container">
-                <CircularButton
-                    text="Transacción"
-                    onClick={() => {
-                        setShowTrans(true);
-                        setFromAccount("");
-                        setToAccount("");
-                        setAmount("");
-                    }}
-                />
-
-                <CircularButton
-                    text="Registrar ingreso"
-                    onClick={() => {
-                        setShowIncome(true); 
-                        setToAccount("");
-                        setAmount("");
-                    }}
-                />
-            </div>
-
-            <Footer onOpenBudgets={() => {
-                setShowBudgets(true);
-                fetchBudgets();
-            }} />
-            
 
         </div>
     );

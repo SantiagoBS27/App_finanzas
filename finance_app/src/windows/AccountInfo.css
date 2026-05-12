@@ -54,7 +54,7 @@
 }
 
 .balance-container.pasivo{
-    background: linear-gradient(135deg, #434343, #000000);
+    background: linear-gradient(135deg, #ff4b4b, #ffa825);
 }
 
 .balance-container h1{
@@ -123,6 +123,35 @@
     border-radius: 10px;
     color: black;
     cursor: pointer;
+}
+
+.delete-account-btn{
+    position: absolute;
+
+    top: 20px;
+    right: 20px;
+
+    width: 100px;
+    height: 50px;
+
+    border: none;
+    border-radius: 14px;
+
+    background: #ff4d4f;
+
+    color: white;
+
+    font-size: 22px;
+
+    cursor: pointer;
+
+    transition: 0.2s;
+}
+
+.delete-account-btn:hover{
+    background: #d9363e;
+
+    transform: scale(1.05);
 }
 
 .account-actions {

@@ -1,67 +1,58 @@
-.home-container {
-    height: 100vh;
+/* ─── MOBILE (base) ─────────────────────────────── */
+
+.dashboard {
     width: 100vw;
-    background-color: #ffffff;
+    min-height: 100vh;
+    background: #dddddd;
+    position: relative;
+}
 
-    display: flex;
-    flex-direction: column;
+.menu-btn {
+    position: fixed;
+    top: 16px;
+    left: 16px;
+    z-index: 100;
 
-    padding: 16px;
+    width: 44px;
+    height: 44px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #151821;
+    color: white;
+    font-size: 22px;
+    cursor: pointer;
+}
+
+.main-content {
+    padding: 70px 20px 30px;
     box-sizing: border-box;
 }
 
-.home-container h1 {
+.main-content h1 {
     margin-top: 0;
     margin-bottom: 10px;
-    text-align: center;
-    font-size: 25px;
+    color: #000;
+    font-size: 26px;
 }
 
-.home-container h2 {
+.main-content h2 {
     margin-top: 0;
-    text-align: center;
-    font-size: 15px;
+    margin-bottom: 20px;
+    color: #000;
+    font-size: 17px;
 }
 
-.accounts-container {
-    margin-top: 0;
-    height: 20vh;
+/* ─── GRID DE CUENTAS ────────────────────────────── */
 
-    display: flex;
-    align-items: center;
-    gap: 12px;
-
-    overflow-x: auto;
-    padding: 10px;
-
-    scroll-snap-type: x mandatory;
-
-    background-image: url("public/images/dinero.png");
-    background-size: cover;
-    background-position: center;
-
-    border-radius: 10px;
+.accounts-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px;
 }
 
-.circular-btn {
-    position: relative;
-    bottom: 80px;
-    right: 20px;
-    z-index: 1000;
-}
-
-.fab-container {
-    position: fixed;
-
-    bottom: 0; 
-    right: 18vw;
-
-    display: flex;
-    flex-direction: row; 
-    gap: 40px;
-
-    z-index: 1500;
-}
+/* ─── MODALES ────────────────────────────────────── */
 
 .account {
     position: fixed;
@@ -69,183 +60,141 @@
     left: 0;
     width: 100%;
     height: 100%;
-
-    background: rgba(0,0,0,0.65);
-
+    background: rgba(0, 0, 0, 0.7);
     display: flex;
     justify-content: center;
     align-items: center;
-
-    z-index: 2000; 
+    z-index: 2000;
 }
 
 .account-form {
-    position: relative;
-    background: #fff;
-
-    padding: 20px;
     width: 90%;
-    max-width: 400px;
-
-    border-radius: 12px;
-
-    text-align: center;
-
-    animation: scaleIn 0.3s ease;
+    max-width: 420px;
+    background: #151821;
+    border: 1px solid #2a2f3a;
+    border-radius: 18px;
+    padding: 25px;
+    box-sizing: border-box;
+    animation: scaleIn 0.25s ease;
 }
 
-.back-btn {
-    position: absolute;
-    top: 20px;
-    left: 20px;
-
-    padding: 10px 15px;
+.account-form select {
+    width: 100%;
+    padding: 14px;
+    margin-bottom: 15px;
     border-radius: 10px;
-
-    cursor: pointer;
+    border: 1px solid #2f3645;
+    background: #0f1117;
+    color: white;
+    font-size: 15px;
 }
+
+/* ─── TABLAS ─────────────────────────────────────── */
 
 .transaction-history {
-    width: 88vw;
-    margin-top: 20px;
-    background: #ffffff;
-
-    border-radius: 12px;
-    padding: 15px;
-
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    background: #151821;
+    border: 1px solid #232734;
+    border-radius: 18px;
+    padding: 20px;
+    overflow: hidden;
 }
 
 .transaction-history h2 {
-    text-align: left;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+    color: white;
 }
 
 .table-history {
-    max-height: 150px;
+    overflow-x: auto;
     overflow-y: auto;
+    max-height: 450px;
 }
 
 .tableT {
-    width: 88vw;
+    width: 100%;
     border-collapse: collapse;
-}
-
-.tableT th, 
-.tableT td {
-    padding: 10px;
-    text-align: center;
-    border-bottom: 1px solid #ddd;
+    min-width: 500px;
 }
 
 .tableT th {
     position: sticky;
     top: 0;
-    background: #fff;
-    font-weight: bold;
-    z-index: 1;
+    background: #11141c;
+    color: #9ca3af;
+    font-weight: 600;
+    z-index: 10;
+}
+
+.tableT th,
+.tableT td {
+    padding: 14px;
+    text-align: center;
+    border-bottom: 1px solid #232734;
+    color: white;
 }
 
 .tableT tr:hover {
-    background-color: #f5f5f5;
+    background: #1a1f2b;
 }
 
-.table-container {
-    max-height: 300px;
-    overflow-y: auto;
+.filters-container{
+    display: grid;
+
+    grid-template-columns: 1fr;
+
+    gap: 15px;
+
+    margin-bottom: 25px;
 }
 
-.table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-.table th, 
-.table td {
-    border-bottom: 1px solid #ddd;
-    padding: 10px;
-    text-align: center;
-}
-
-.table th {
-    position: sticky;
-    top: 0;
-    background: #fff;
-    color: #555;
-}
-
-.btn {
-    margin-top: 10px;
-}
-
-@media (min-width: 481px) and (max-width: 768px) {
-  .fab-container {
-    right: 30vw;
-}
-}
-
-@media (min-width: 769px) and (max-width: 1024px){
-
-    .fab-container {
-        bottom: 30px; 
-        right: 20px;
-
-        flex-direction: column; 
-    }
-
-    .transaction-history{
-        width: 80vw;
-    }
-
-    .tableT{
-        width: 80vw;
-    }
-
-    .table-history {
-        max-height: 250px;
-    }
-    .accounts-container{
-        margin-top: 50px;
-    }
-}
-
-@media (min-width: 1025px) {
-    .home-container h1{
-        font-size: 35px;
-    }
-    .home-container h2{
-        font-size: 25px;
-    }
-    .circular-btn {
-    bottom: 100px;
-    }
-
-    .fab-container {
-    bottom: 30px; 
-    right: 20px;
-
-    flex-direction: column; 
-    }
-
-    .table-history {
-    max-height: 250px;
-    }
-
-    .accounts-container{
-        margin-top: 50px;
-        height: 30vh;
-    }
-}
+/* ─── ANIMACIÓN ──────────────────────────────────── */
 
 @keyframes scaleIn {
-    from {
-        opacity: 0;
-        transform: scale(0.9);
-    }
-    to {
-        opacity: 1;
-        transform: scale(1);
-    }
+    from { opacity: 0; transform: scale(0.92); }
+    to   { opacity: 1; transform: scale(1); }
 }
 
+/* ─── TABLET ─────────────────────────────────────── */
+
+@media (min-width: 768px) {
+    .main-content {
+        padding: 80px 30px 30px;
+    }
+    .main-content h1 { font-size: 34px; }
+    .main-content h2 { font-size: 22px; }
+}
+
+/* ─── DESKTOP ────────────────────────────────────── */
+
+@media (min-width: 1025px) {
+
+    .menu-btn {
+        display: none;
+    }
+
+    .main-content {
+        margin-left: 280px;
+        padding: 40px;
+        min-height: 100vh;
+    }
+
+    .accounts-grid {
+        grid-template-columns: repeat(3, 1fr);
+        align-items: start;
+    }
+
+    .main-content h1 { font-size: 40px; }
+    .main-content h2 { font-size: 24px; }
+
+    .table-history { max-height: 600px; }
+
+    .account-form { max-width: 500px; }
+    .account-form select { font-size: 16px; }
+
+    .filters-container{
+        grid-template-columns: repeat(3, 1fr);
+
+        align-items: end;
+    }
+}
 

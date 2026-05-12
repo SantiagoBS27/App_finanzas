@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import Footer from "../Components/Footer";
 import Button from "../Components/Button";
 import "./ExchangeRate.css";
 
@@ -68,6 +67,8 @@ function ExchangeRate() {
             </option>
           ))}
         </select>
+
+        <div className="exchange-divider">⇅</div>
 
         <label>Moneda destino</label>
         <select value={to} onChange={(e) => setTo(e.target.value)}>

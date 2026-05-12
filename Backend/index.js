@@ -168,7 +168,7 @@ app.get("/home", (req, res) => {
         JOIN currencyType c ON c.id_currency = a.id_currency
         JOIN accounttype t ON t.id_type = a.id_type
         WHERE a.id_user = ?  
-        AND a.account_name != 'Sistema'
+        AND a.deactivated_at IS NULL
     `
 
     db.query(sqlAcc, [userId], (err, result) => {
@@ -598,3 +598,23 @@ app.post("/income", (req, res) => {
     });
 }); 
 
+app.put("/deactivateAccount/:id", (req, res) => {
+
+    const accountId = req.params.id;
+
+    const sql = `
+        UPDATE account
+        SET deactivated_at = NOW()
+        WHERE id_account = ?
+    `;
+
+    db.query(sql, [accountId], (err, result) => {
+
+        if(err){
+            console.log(err);
+            return res.status(500).send("Error");
+        }
+
+        res.send("Cuenta desactivada");
+    });
+});

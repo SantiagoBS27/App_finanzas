@@ -22,6 +22,7 @@ function AccountInfo() {
   const [toAccount, setToAccount] = useState("");
   const [amount, setAmount] = useState("");
   const [mensaje, setMensaje] = useState("");
+  const [fromAccount, setFromAccount] = useState("");
   const navigate = useNavigate();
 
  
@@ -92,6 +93,7 @@ function AccountInfo() {
                   "Content-Type": "application/json"
               },
               body: JSON.stringify({
+                  fromAccount, 
                   toAccId: account.id_account,
                   amount: Number(amount)
               })
@@ -145,7 +147,43 @@ function AccountInfo() {
         } catch (error) {
             console.error(error);
         }
-    };
+  };
+
+  const deactivateAccount = async () => {
+
+    const confirmDelete = window.confirm(
+        "¿Está seguro de desactivar esta cuenta?"
+    );
+
+    if(!confirmDelete) return;
+
+    try{
+
+        const res = await fetch(
+            `${import.meta.env.VITE_API_URL}/deactivateAccount/${account.id_account}`,
+            {
+                method: "PUT"
+            }
+        );
+
+        const result = await res.text();
+
+        if(res.ok){
+
+            alert("Cuenta desactivada");
+
+            navigate("/home");
+
+        } else{
+            alert(result);
+        }
+
+    } catch(err){
+        console.error(err);
+    }
+};
+
+
 
 
   useEffect(() => {
@@ -186,6 +224,13 @@ function AccountInfo() {
 
     <button className="back-btn" onClick={() => navigate(-1)}>
       Volver
+    </button>
+
+    <button
+        className="delete-account-btn"
+        onClick={deactivateAccount}
+    >
+        Borrar cuenta
     </button>
 
    
@@ -280,6 +325,17 @@ function AccountInfo() {
           className="account-form"
           onClick={(e) => e.stopPropagation()}
         >
+
+          <select onChange={(e) => setFromAccount(Number(e.target.value))}>
+            <option value="">Cuenta origen</option>
+                {accounts
+                .filter(acc => acc.type_name !== "Gasto" && acc.type_name !== "Pasivo" && acc.type_name !== "Ingreso")
+                .map(acc => (
+                    <option key={acc.id_account} value={acc.id_account}>
+                        {acc.account_name}
+                    </option>
+                ))}
+            </select>
 
           <Input
             type="number"
@@ -418,22 +474,6 @@ function AccountInfo() {
     {account.type_name === "Activo" && (
       <div className="account-actions">
 
-        <Button
-          text="Registrar ingreso"
-          onClick={() => {
-            setShowIncome(true);
-            setAmount("");
-          }}
-        />
-
-        <Button
-          text="Transacción"
-          onClick={() => {
-            setShowTransaction(true);
-            setToAccount("");
-            setAmount("");
-          }}
-        />
 
       </div>
     )}

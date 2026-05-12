@@ -2,7 +2,7 @@
     width: 100%;
     padding: 8px 5px;
     font-size: 16px;
-    color: #000000;
+    color: #3d3d3d;
 
     border: 1px solid #3a3a3a;
     outline: 1px solid #3a3a3a;
@@ -20,7 +20,7 @@
     border: 1px solid #00df56;
     outline: 1px solid #00df56;
 
-    background-color: #eef7ff;
+    background-color: #ffffff;
 
     transition: 0.2s;
 }

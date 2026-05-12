@@ -1,6 +1,6 @@
 .AccCard{
     text-align: center;
-    min-width: 160px;
+    min-width: 130px;
     height: 120px;
 
     display: flex;
@@ -37,7 +37,7 @@
 }
 
 .Pasivo {
-  background: linear-gradient(135deg, #434343, #000000);
+  background: linear-gradient(135deg, #ff4b4b, #ffa825);
 }
 
 .Gasto {
@@ -57,7 +57,7 @@
 }
 
 .AccCard.Pasivo:hover{
-    background: linear-gradient(135deg, #2e2e2e, #111111);
+    background: linear-gradient(135deg, #ff3636, #ff9e0c);
 }
 
 .AccCard.Gasto:hover{
