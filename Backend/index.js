@@ -131,7 +131,8 @@ app.post("/signup", (req, res) => {
                             { name: "Trabajo", type: 1 },
                             { name: "Salario", type: 2 },
                             { name: "Comida", type: 3 },
-                            { name: "Ahorros", type: 1 }
+                            { name: "Ahorros", type: 1 },
+                            { name: "Tarjeta Crédito", type: 5 }
                         ];
                         defaultAccounts.forEach(acc => {
                             const sql = `
@@ -520,7 +521,7 @@ app.post("/income", (req, res) => {
     }
 
     const currencySql = `
-    SELECT id_currency
+    SELECT id_account, id_currency, id_type
     FROM account
     WHERE id_account IN (?, ?)
     `;
@@ -541,6 +542,16 @@ app.post("/income", (req, res) => {
                 .send("Las cuentas deben tener la misma moneda");
         }
 
+        let finalAmount = Number(amount);
+
+        const fromData = result.find(
+            acc => acc.id_account == fromAccount
+        );
+
+        if(fromData.id_type === 5){
+            finalAmount = -Number(amount);
+        }
+
         db.beginTransaction((err) => {
             if (err) {
                 console.error(err);
@@ -553,7 +564,7 @@ app.post("/income", (req, res) => {
                 WHERE id_account = ?
             `;
 
-            db.query(updateFrom, [amount, fromAccount], (err) => {
+            db.query(updateFrom, [finalAmount, fromAccount], (err) => {
                 if (err) {
                     console.error(err);
                     return db.rollback(() => res.status(500).send("Error origen"));
@@ -565,7 +576,7 @@ app.post("/income", (req, res) => {
                     WHERE id_account = ?
                 `;
 
-                db.query(updateTo, [amount, toAccId], (err) => {
+                db.query(updateTo, [Math.abs(amount), toAccId], (err) => {
                     if (err) {
                         console.error(err);
                         return db.rollback(() => res.status(500).send("Error destino"));
@@ -618,3 +629,24 @@ app.put("/deactivateAccount/:id", (req, res) => {
         res.send("Cuenta desactivada");
     });
 });
+
+app.post("/adjust", (req, res) => {
+    const {accountId, amount} = req.body;
+
+    const sql = `
+        UPDATE account
+        SET balance = ?
+        WHERE id_account = ?
+    `;
+
+    const finalAmount = -Math.abs(amount); 
+
+    db.query(sql, [finalAmount, accountId], (err, result) => {
+        if(err){
+            console.log(err);
+            return res.status(500).send("Error");
+        }
+
+        res.send("Monto ajustado");
+    });
+}); 

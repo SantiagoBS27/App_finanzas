@@ -7,6 +7,8 @@ function Sidebar({
     setActiveSection,
     setShowForm,
     setShowTrans,
+    setFromAccount,
+    setAmount,
     setShowIncome,
     fetchBudgets,
     fetchTransactions
@@ -42,6 +44,8 @@ function Sidebar({
                     onClick={() => {
                         setShowTrans(true);
                         setShowSidebar(false);
+                        setFromAccount(""); 
+                        setAmount(""); 
                     }}
                 >
                     Transacción

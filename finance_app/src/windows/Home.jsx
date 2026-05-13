@@ -268,6 +268,8 @@ const filteredBudgets = budgets.filter((b) => {
                 fetchTransactions={fetchTransactions}
                 setShowTrans={setShowTrans}
                 setShowIncome={setShowIncome}
+                setFromAccount={setFromAccount}
+                setAmount={setAmount}
             />
             
             <button
@@ -515,7 +517,7 @@ const filteredBudgets = budgets.filter((b) => {
                             <option value="">Cuenta origen</option>
                             
                             {accounts
-                            .filter(acc => acc.type_name !== "Gasto" && acc.type_name !== "Pasivo" && acc.type_name !== "Activo")
+                            .filter(acc => acc.type_name !== "Gasto" && acc.type_name !== "Ingreso" && acc.type_name !== "Pasivo")
                             .map(acc => (
                                 <option key={acc.id_account} value={acc.id_account}>
                                     {acc.account_name}
@@ -526,7 +528,7 @@ const filteredBudgets = budgets.filter((b) => {
                         <select onChange={(e) => setToAccount(Number(e.target.value))}>
                             <option value="">Cuenta destino</option>
                             {accounts
-                            .filter(acc => acc.id_account !== fromAccount)
+                            .filter(acc => acc.id_account !== fromAccount && acc.type_name !== "Ingreso")
                             .map(acc => (
                                 <option key={acc.id_account} value={acc.id_account}>
                                 {acc.account_name}

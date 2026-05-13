@@ -18,6 +18,7 @@ function AccountInfo() {
   const [historyB, setHistoryB] = useState(false);
   const [showIncome, setShowIncome] = useState(false);
   const [showTransaction, setShowTransaction] = useState(false);
+  const [showAdjust, setShowAdjust] = useState(false);
 
   const [toAccount, setToAccount] = useState("");
   const [amount, setAmount] = useState("");
@@ -86,17 +87,39 @@ function AccountInfo() {
   };
 
   const income = async () => {
+      let bodyData = {};
+
+      if(account.type_name === "Ingreso"){
+
+          bodyData = {
+              fromAccount,
+              toAccId: account.id_account,
+              amount: Number(amount)
+          };
+      }
+      if(account.type_name === "Activo"){
+
+          bodyData = {
+              fromAccount: account.id_account,
+              toAccId: toAccount,
+              amount: Number(amount)
+          };
+      }
+      if(account.type_name === "Pasivo"){
+
+          bodyData = {
+              fromAccount: account.id_account,
+              toAccId: toAccount,
+              amount: Number(amount)
+          };
+      }
       try{
           const res = await fetch(`${import.meta.env.VITE_API_URL}/income`, {
               method: "POST",
               headers: {
                   "Content-Type": "application/json"
               },
-              body: JSON.stringify({
-                  fromAccount, 
-                  toAccId: account.id_account,
-                  amount: Number(amount)
-              })
+              body: JSON.stringify(bodyData)
           });
 
           const result = await res.text();
@@ -137,6 +160,36 @@ function AccountInfo() {
             if (res.ok) {
                 alert("Transacción realizada");
                 setShowTransaction(false); 
+                const updated = await fetch(`${import.meta.env.VITE_API_URL}/account/${id}`);
+                const newData = await updated.json();
+
+                setAccount(newData);
+            } else {
+                alert(result);
+            }
+        } catch (error) {
+            console.error(error);
+        }
+  };
+
+  const Adjust = async () => {
+        try {
+            const res = await fetch(`${import.meta.env.VITE_API_URL}/adjust`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    accountId: account.id_account,
+                    amount: Number(amount)
+                })
+            });
+
+            const result = await res.text();
+
+            if (res.ok) {
+                alert("Ajuste realizado");
+                setShowAdjust(false); 
                 const updated = await fetch(`${import.meta.env.VITE_API_URL}/account/${id}`);
                 const newData = await updated.json();
 
@@ -325,17 +378,63 @@ function AccountInfo() {
           className="account-form"
           onClick={(e) => e.stopPropagation()}
         >
+          
+          {account.type_name === "Ingreso" && (
 
-          <select onChange={(e) => setFromAccount(Number(e.target.value))}>
-            <option value="">Cuenta origen</option>
+            <select onChange={(e) => setFromAccount(Number(e.target.value))}>
+
+                <option value="">Cuenta activa que recibe el dinero</option>
+
                 {accounts
-                .filter(acc => acc.type_name !== "Gasto" && acc.type_name !== "Pasivo" && acc.type_name !== "Ingreso")
+                .filter(acc =>
+                    acc.type_name === "Activo"
+                )
                 .map(acc => (
                     <option key={acc.id_account} value={acc.id_account}>
                         {acc.account_name}
                     </option>
                 ))}
+
             </select>
+        )}
+
+        {account.type_name === "Activo" && (
+
+            <select onChange={(e) => setToAccount(Number(e.target.value))}>
+
+                <option value="">Cuenta ingreso destino</option>
+
+                {accounts
+                .filter(acc =>
+                    acc.type_name === "Ingreso"
+                )
+                .map(acc => (
+                    <option key={acc.id_account} value={acc.id_account}>
+                        {acc.account_name}
+                    </option>
+                ))}
+
+            </select>
+        )}
+
+        {account.type_name === "Pasivo" && (
+
+            <select onChange={(e) => setToAccount(Number(e.target.value))}>
+
+                <option value="">Cuenta gasto destino</option>
+
+                {accounts
+                .filter(acc =>
+                    acc.type_name === "Gasto"
+                )
+                .map(acc => (
+                    <option key={acc.id_account} value={acc.id_account}>
+                        {acc.account_name}
+                    </option>
+                ))}
+
+            </select>
+        )}
 
           <Input
             type="number"
@@ -364,7 +463,7 @@ function AccountInfo() {
               {accounts
                 .filter(acc =>
                   acc.id_account !== account.id_account &&
-                  acc.account_name !== "Sistema"
+                  acc.type_name !== "Ingreso"
                 )
                 .map(acc => (
                   <option key={acc.id_account} value={acc.id_account}>
@@ -383,6 +482,26 @@ function AccountInfo() {
             <Button
               text = "Completar"
               onClick={transaction} 
+            />          
+        </div>
+      </div>
+    )}
+
+    {showAdjust && (
+      <div className="account"
+      onClick={() => setShowAdjust(false)}>
+        <div className="account-form"
+        onClick={(e) => e.stopPropagation()}>
+            <Input
+              type="number"
+              placeholder="Monto"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
+
+            <Button
+              text = "Completar"
+              onClick={Adjust} 
             />          
         </div>
       </div>
@@ -458,7 +577,12 @@ function AccountInfo() {
             setAmount("");
           }}
         />
+      </div>
+    )}
 
+   
+    {account.type_name === "Activo" && (
+      <div className="account-actions">
         <Button
           text="Transacción"
           onClick={() => {
@@ -467,13 +591,33 @@ function AccountInfo() {
             setAmount("");
           }}
         />
+        <Button
+          text="Registrar ingreso"
+          onClick={() => {
+            setShowIncome(true);
+            setAmount("");
+          }}
+        />
+
       </div>
     )}
 
-   
-    {account.type_name === "Activo" && (
+    {account.type_name === "Pasivo" && (
       <div className="account-actions">
-
+        <Button
+          text="Ajustar deuda"
+          onClick={() => {
+            setShowAdjust(true); 
+            setAmount("");
+          }}
+        />
+        <Button
+          text="Registrar aumento"
+          onClick={() => {
+            setShowIncome(true);
+            setAmount("");
+          }}
+        />
 
       </div>
     )}
