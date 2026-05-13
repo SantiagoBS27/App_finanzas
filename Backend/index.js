@@ -431,9 +431,9 @@ app.post("/transaction", (req, res) => {
     }
 
     const currencySql = `
-    SELECT id_currency
-    FROM account
-    WHERE id_account IN (?, ?)
+        SELECT id_account, id_currency, id_type, balance
+        FROM account
+        WHERE id_account IN (?, ?)
     `;
 
     db.query(currencySql, [fromAccId, toAccId], (err, result) => {
@@ -450,6 +450,23 @@ app.post("/transaction", (req, res) => {
             return res
                 .status(400)
                 .send("Las cuentas deben tener la misma moneda");
+        }
+
+        const toData = result.find(
+            acc => acc.id_account == toAccId
+        );
+
+        if(toData.id_type === 5){
+
+            const newBalance =
+                Number(toData.balance) + Number(amount);
+
+            if(newBalance > 0){
+
+                return res
+                    .status(400)
+                    .send("Un pasivo no puede quedar positivo");
+            }
         }
 
         db.beginTransaction((err) => {
@@ -521,9 +538,9 @@ app.post("/income", (req, res) => {
     }
 
     const currencySql = `
-    SELECT id_account, id_currency, id_type
-    FROM account
-    WHERE id_account IN (?, ?)
+        SELECT id_account, id_currency, id_type, balance
+        FROM account
+        WHERE id_account IN (?, ?)
     `;
 
     db.query(currencySql, [fromAccount, toAccId], (err, result) => {
@@ -550,6 +567,18 @@ app.post("/income", (req, res) => {
 
         if(fromData.id_type === 5){
             finalAmount = -Number(amount);
+        }
+
+        const newBalance =
+            Number(fromData.balance) + finalAmount;
+
+        if(
+            fromData.id_type === 5 &&
+            newBalance > 0
+        ){
+            return res
+                .status(400)
+                .send("Un pasivo no puede quedar positivo");
         }
 
         db.beginTransaction((err) => {

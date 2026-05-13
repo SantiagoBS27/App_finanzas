@@ -281,7 +281,7 @@ const filteredBudgets = budgets.filter((b) => {
 
             <div className="main-content">
 
-                <h1>Bienvenido, {name}!!</h1>
+                <h1>Hola, {name}!!</h1>
 
                 {activeSection === "accounts" && (
                     <>
